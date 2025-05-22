@@ -24,7 +24,6 @@ export default function Navbar() {
 
   useEffect(() => {
     const sections = document.querySelectorAll("section[id]");
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -33,9 +32,7 @@ export default function Navbar() {
           }
         });
       },
-      {
-        threshold: 0.6,
-      }
+      { threshold: 0.6 }
     );
 
     sections.forEach((section) => observer.observe(section));
@@ -64,7 +61,6 @@ export default function Navbar() {
     { href: "#projects", label: "Projects" },
     { href: "#contact", label: "Contact" },
     { href: "#idea-vault", label: "Idea Vault" },
-    
   ];
 
   return (
@@ -77,12 +73,12 @@ export default function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* 👨‍🚀 Logo */}
+        {/* Logo */}
         <div className="text-3xl font-black text-transparent bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text animate-text-glow">
           Arshpreet Singh
         </div>
 
-        {/* 💻 Desktop Nav */}
+        {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-gray-700 dark:text-gray-300">
           {navLinks.map((link) => (
             <motion.div
@@ -103,7 +99,7 @@ export default function Navbar() {
             </motion.div>
           ))}
 
-          {/* 📄 Resume */}
+          {/* Resume */}
           <motion.button
             onClick={showResumeToast}
             whileHover={{ scale: 1.15 }}
@@ -112,7 +108,7 @@ export default function Navbar() {
             <Download size={16} /> Resume
           </motion.button>
 
-          {/* 🌗 Theme Toggle */}
+          {/* Theme Toggle */}
           <div className="flex items-center gap-2 ml-4">
             <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Theme</span>
             <button
@@ -129,7 +125,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* 📱 Mobile Menu Toggle */}
+        {/* Mobile Menu Toggle */}
         <button
           className="md:hidden text-purple-500"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -139,7 +135,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* 📱 Mobile Drawer */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -161,6 +157,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
             <button
               onClick={() => {
                 showResumeToast();
@@ -170,12 +167,32 @@ export default function Navbar() {
             >
               <Download size={16} /> Resume
             </button>
+
+            {/* Mobile Theme Toggle */}
+            <div className="flex items-center gap-2 pt-2">
+              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Theme</span>
+              <button
+                onClick={() => {
+                  toggleDarkMode();
+                  setMenuOpen(false);
+                }}
+                className={clsx(
+                  "p-2 rounded-full transition-all shadow-md",
+                  darkMode ? "bg-purple-600 hover:bg-purple-700" : "bg-purple-400 hover:bg-purple-500",
+                  "hover:scale-110"
+                )}
+                aria-label="Toggle Dark Mode (Mobile)"
+              >
+                {darkMode ? <Moon className="text-white w-5 h-5" /> : <Sun className="text-yellow-300 w-5 h-5" />}
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
     </nav>
   );
 }
+
 
 
 
