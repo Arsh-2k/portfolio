@@ -29,16 +29,35 @@ export default function ParticlesBackground() {
         fullScreen: { enable: true, zIndex: -1 },
         background: { color: "transparent" },
         particles: {
-          number: { value: 80 },
+          number: { value: 60 },
           color: { value: isDarkMode ? "#ffffff" : "#000000" },
           shape: { type: "circle" },
-          opacity: { value: 0.3 },
-          size: { value: 2 },
+          opacity: {
+            value: 0.25,
+            anim: {
+              enable: true,
+              speed: 1,
+              opacity_min: 0.1,
+              sync: false,
+            },
+          },
+          size: {
+            value: 2,
+            random: true,
+            anim: {
+              enable: true,
+              speed: 1,
+              size_min: 0.5,
+              sync: false,
+            },
+          },
           move: {
             enable: true,
-            speed: 1.5,
+            speed: 1,
             direction: "none",
             outModes: { default: "out" },
+            random: true,
+            straight: false,
           },
         },
         interactivity: {
@@ -48,11 +67,12 @@ export default function ParticlesBackground() {
           },
           modes: {
             repulse: {
-              distance: 100,
+              distance: 80,
               duration: 0.4,
             },
           },
         },
+        detectRetina: true,
       }}
     />
   );
