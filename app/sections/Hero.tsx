@@ -22,6 +22,7 @@ export default function Hero() {
     <section
       id="home"
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6
+      pb-12 sm:pb-20
       bg-gradient-to-br from-white via-purple-100 to-blue-200 
       dark:from-black dark:via-[#1a0024] dark:to-black transition-all duration-500 overflow-hidden"
     >
@@ -58,7 +59,7 @@ export default function Hero() {
       <motion.h1
         className="text-5xl md:text-7xl font-extrabold 
         bg-gradient-to-r from-blue-500 via-fuchsia-500 to-purple-500 bg-clip-text text-transparent
-        animate-text-glow"
+        leading-tight md:leading-[1.15] animate-text-glow"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
@@ -109,3 +110,4 @@ export default function Hero() {
     </section>
   );
 }
+

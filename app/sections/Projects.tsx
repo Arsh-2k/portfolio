@@ -24,21 +24,31 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="min-h-screen px-4 py-20 bg-gradient-to-br 
-      from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950 
+      className="w-full min-h-screen flex flex-col justify-center items-center px-6 py-20
+      bg-gradient-to-br from-white via-gray-100 to-purple-100
+      dark:from-black dark:via-zinc-900 dark:to-purple-950
       text-gray-900 dark:text-white transition-colors duration-500"
     >
-      <div className="max-w-6xl mx-auto">
-        <motion.h2
-          className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          Projects
-        </motion.h2>
+      <div className="max-w-6xl w-full">
+        {/* 🌈 Gradient Header with descender-safe spacing */}
+        <div className="text-center mb-20 overflow-visible relative">
+          <h2
+            className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r 
+            from-fuchsia-500 via-purple-500 to-blue-500 text-transparent 
+            bg-clip-text leading-[1.2] pb-3"
+          >
+            My Projects
+          </h2>
 
+          <motion.div
+            className="h-[4px] mt-4 mx-auto rounded-full bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500"
+            initial={{ width: 0 }}
+            whileInView={{ width: '100%' }}
+            transition={{ duration: 1, ease: 'easeInOut' }}
+          />
+        </div>
+
+        {/* 🧩 Projects Grid */}
         <div className="grid gap-8 md:grid-cols-2">
           {projects.map((project, index) => (
             <motion.div
@@ -85,4 +95,3 @@ export default function Projects() {
     </section>
   );
 }
-
