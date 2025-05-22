@@ -1,6 +1,7 @@
 'use client';
 
-import { FaHome, FaLinkedin, FaGithub, FaEnvelope, FaCode } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaHome, FaLinkedin, FaGithub, FaEnvelope, FaCode, FaBars, FaTimes } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 
 const icons = [
@@ -13,34 +14,49 @@ const icons = [
 ];
 
 const SocialBar = () => {
-  return (
-    <div className="group fixed bottom-4 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-3 sm:py-4 w-fit flex items-center gap-3 sm:gap-4 rounded-full z-50 border border-white/10 bg-black/30 backdrop-blur-md shadow-lg transition-all duration-500
-      before:content-[''] before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-br before:from-purple-500/20 before:to-blue-500/20 before:blur-2xl before:-z-10">
-      {icons.map(({ icon, link, label }, index) => (
-        <a
-          key={index}
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative group/icon flex flex-col items-center transition-all duration-300"
-        >
-          {/* Tooltip */}
-          <span className="absolute -top-10 text-[10px] sm:text-xs bg-white text-black dark:bg-zinc-900 dark:text-white px-2 py-1 rounded opacity-0 group-hover/icon:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap shadow z-10">
-            {label}
-          </span>
+  const [isOpen, setIsOpen] = useState(false);
 
-          {/* Icon Bubble */}
-          <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-blue-600 to-indigo-600 text-2xl sm:text-3xl text-white shadow-lg 
-            transition-all duration-300 ease-out group-hover:scale-90 group-hover/icon:scale-125 hover:shadow-[0_0_20px_4px_rgba(99,102,241,0.6)]">
-            {icon}
-          </div>
-        </a>
-      ))}
+  return (
+    <div className="fixed bottom-4 left-4 sm:left-1/2 sm:-translate-x-1/2 z-50">
+      {/* Toggle button for mobile */}
+      <button
+        className="sm:hidden flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xl shadow-lg"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle Social Links"
+      >
+        {isOpen ? <FaTimes /> : <FaBars />}
+      </button>
+
+      {/* Horizontal bar on desktop, vertical menu on mobile */}
+      <div
+        className={`${
+          isOpen ? 'flex' : 'hidden'
+        } sm:flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-4 sm:px-6 sm:py-3 bg-black/30 backdrop-blur-md border border-white/10 shadow-lg rounded-3xl sm:rounded-full mt-4 sm:mt-0 transition-all duration-500
+        before:content-[''] before:absolute before:inset-0 before:rounded-3xl sm:before:rounded-full before:bg-gradient-to-br before:from-purple-500/20 before:to-blue-500/20 before:blur-2xl before:-z-10`}
+      >
+        {icons.map(({ icon, link, label }, index) => (
+          <a
+            key={index}
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative group/icon flex flex-col items-center text-white transition-all duration-300"
+          >
+            <span className="absolute -top-8 sm:-top-10 text-[10px] sm:text-xs bg-white text-black dark:bg-zinc-900 dark:text-white px-2 py-1 rounded opacity-0 group-hover/icon:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap shadow z-10">
+              {label}
+            </span>
+            <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-blue-600 to-indigo-600 text-lg sm:text-2xl shadow-md transition-all duration-300 group-hover:scale-90 group-hover/icon:scale-110 hover:shadow-[0_0_12px_2px_rgba(99,102,241,0.5)]">
+              {icon}
+            </div>
+          </a>
+        ))}
+      </div>
     </div>
   );
 };
 
 export default SocialBar;
+
 
 
 
