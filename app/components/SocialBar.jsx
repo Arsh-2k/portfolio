@@ -14,22 +14,24 @@ const icons = [
 
 const SocialBar = () => {
   return (
-    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex gap-4 bg-black/20 backdrop-blur-md px-6 py-4 rounded-full shadow-lg z-50 border border-white/10 dark:border-white/20">
+    <div className="group fixed bottom-4 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-3 sm:py-4 w-fit flex items-center gap-3 sm:gap-4 rounded-full z-50 border border-white/10 bg-black/30 backdrop-blur-md shadow-lg transition-all duration-500
+      before:content-[''] before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-br before:from-purple-500/20 before:to-blue-500/20 before:blur-2xl before:-z-10">
       {icons.map(({ icon, link, label }, index) => (
         <a
           key={index}
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative flex flex-col items-center text-white dark:text-white transition-all duration-300"
+          className="relative group/icon flex flex-col items-center transition-all duration-300"
         >
-          {/* Label */}
-          <span className="absolute -top-8 text-sm bg-white text-black dark:bg-zinc-900 dark:text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap shadow">
+          {/* Tooltip */}
+          <span className="absolute -top-10 text-[10px] sm:text-xs bg-white text-black dark:bg-zinc-900 dark:text-white px-2 py-1 rounded opacity-0 group-hover/icon:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap shadow z-10">
             {label}
           </span>
 
-          {/* Icon with scaling effect */}
-          <div className="p-4 bg-blue-600 dark:bg-blue-500 rounded-full text-xl shadow-md transition-transform transform group-hover:scale-150 hover:bg-blue-700 dark:hover:bg-blue-600">
+          {/* Icon Bubble */}
+          <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-blue-600 to-indigo-600 text-2xl sm:text-3xl text-white shadow-lg 
+            transition-all duration-300 ease-out group-hover:scale-90 group-hover/icon:scale-125 hover:shadow-[0_0_20px_4px_rgba(99,102,241,0.6)]">
             {icon}
           </div>
         </a>
@@ -39,5 +41,8 @@ const SocialBar = () => {
 };
 
 export default SocialBar;
+
+
+
 
 
