@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Sun, Moon, Zap } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react'; // ✅ Removed unused `Zap`
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');

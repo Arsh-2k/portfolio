@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
 import ClientLayout from "./ClientLayout";
+import { SpeedInsights } from "@vercel/speed-insights/next"; // ✅ Added here
 
 // ✅ Server-side only — valid place for metadata
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <ClientLayout>{children}</ClientLayout>
+        <SpeedInsights /> {/* ✅ Added here */}
       </body>
     </html>
   );
