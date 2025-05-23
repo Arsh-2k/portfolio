@@ -1,18 +1,18 @@
-/* app/globals.css */
-
 /* Tailwind layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Global Styles */
+/* ---------------- GLOBAL STYLES ---------------- */
+
+/* Smooth scroll + better font rendering */
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Smooth scrollbars (optional but fancy) */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -24,13 +24,68 @@ html {
   border-radius: 10px;
 }
 
-/* Custom selection highlight */
+/* Text selection highlight */
 ::selection {
   background-color: #a855f7; /* purple-500 */
   color: white;
 }
 
-/* Body setup for themes */
+/* Default body theme setup */
 body {
-  @apply bg-white text-black dark:bg-black dark:text-white transition-colors duration-300;
+  @apply bg-white text-black dark:bg-[#0f0a1b] dark:text-white transition-colors duration-500 font-sans;
+}
+
+/* Skip nav focus style */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #a855f7; /* purple-500 */
+  outline-offset: 4px;
+  transition: outline-color 0.3s ease;
+}
+
+/* ---------------- ANIMATIONS ---------------- */
+
+/* ⚡ Glowing name text */
+@keyframes zap {
+  0%, 100% {
+    text-shadow: 0 0 0px transparent;
+  }
+  50% {
+    text-shadow:
+      0 0 5px #a855f7,
+      0 0 10px #a855f7,
+      0 0 20px #a855f7;
+  }
+}
+.animate-zap {
+  animation: zap 1.4s ease-in-out infinite;
+}
+
+/* 🎯 Fade-in for sections */
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+/* ---------------- UTILITIES ---------------- */
+
+/* Prevent text dragging / annoying selects */
+.noselect {
+  user-select: none;
+}
+
+/* Glassmorphism helpers (if needed later) */
+.glass {
+  @apply backdrop-blur-md bg-white/20 dark:bg-white/5 border border-white/10 rounded-xl;
 }

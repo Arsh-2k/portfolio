@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { FaGithub } from 'react-icons/fa';
+import Tilt from 'react-parallax-tilt';
 
 const projects = [
   {
@@ -27,15 +28,14 @@ export default function Projects() {
       className="w-full min-h-screen flex flex-col justify-center items-center px-6 py-20
       bg-gradient-to-br from-white via-gray-100 to-purple-100
       dark:from-black dark:via-zinc-900 dark:to-purple-950
-      text-gray-900 dark:text-white transition-colors duration-500"
+      text-gray-900 dark:text-white transition-colors duration-500 scroll-mt-24"
     >
       <div className="max-w-6xl w-full">
-        {/* 🌈 Gradient Header with descender-safe spacing */}
-        <div className="text-center mb-20 overflow-visible relative">
+        <div className="text-center mb-20">
           <h2
             className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r 
             from-fuchsia-500 via-purple-500 to-blue-500 text-transparent 
-            bg-clip-text leading-[1.2] pb-3"
+            bg-clip-text leading-[1.2]"
           >
             My Projects
           </h2>
@@ -48,47 +48,73 @@ export default function Projects() {
           />
         </div>
 
-        {/* 🧩 Projects Grid */}
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-8 md:grid-cols-2 sm:grid-cols-1">
           {projects.map((project, index) => (
-            <motion.div
+            <Tilt
               key={index}
-              className="group bg-white/80 dark:bg-black/30 backdrop-blur-md border border-purple-300/30 
-              dark:border-purple-800/30 rounded-2xl p-6 shadow-md hover:shadow-purple-400/30 
-              dark:hover:shadow-purple-500/30 hover:scale-[1.03] transition-all duration-300 relative overflow-hidden"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
+              tiltMaxAngleX={10}
+              tiltMaxAngleY={10}
+              glareEnable={true}
+              glareMaxOpacity={0.2}
+              transitionSpeed={1000}
+              scale={1.03}
+              className="rounded-2xl"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/10 via-transparent to-blue-200/10 dark:from-purple-900/10 dark:to-purple-700/10 rounded-2xl pointer-events-none group-hover:blur-sm transition duration-500" />
-
-              <h3 className="text-2xl font-semibold mb-2 text-purple-700 dark:text-purple-300 z-10 relative">
-                {project.title}
-              </h3>
-
-              <p className="text-sm mb-4 z-10 relative">{project.description}</p>
-
-              <div className="flex flex-wrap gap-2 text-sm mb-4 z-10 relative">
-                {project.tech.map((tech, i) => (
-                  <span
-                    key={i}
-                    className="bg-purple-200 text-purple-800 dark:bg-purple-800 dark:text-purple-200 px-2 py-1 rounded-full"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-300 font-semibold hover:underline z-10 relative"
+              <motion.div
+                className="group relative bg-white/80 dark:bg-black/30 backdrop-blur-md border 
+                border-purple-300/30 dark:border-purple-800/30 rounded-2xl p-6 shadow-md 
+                hover:shadow-purple-400/30 dark:hover:shadow-purple-500/30 transition-all duration-500 overflow-hidden"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', duration: 0.7, delay: index * 0.2 }}
+                viewport={{ once: true }}
               >
-                <FaGithub /> View on GitHub
-              </a>
-            </motion.div>
+                {/* Shimmer background on hover */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/10 via-transparent to-blue-200/10 dark:from-purple-900/10 dark:to-purple-700/10 rounded-2xl group-hover:blur-sm transition duration-700 pointer-events-none" />
+
+                <h3 className="text-2xl font-semibold mb-2 text-purple-700 dark:text-purple-300 relative z-10">
+                  {project.title}
+                </h3>
+
+                <p className="text-sm mb-4 relative z-10">{project.description}</p>
+
+                <motion.div
+                  className="flex flex-wrap gap-2 text-sm mb-4 relative z-10"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={{
+                    hidden: {},
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.1,
+                      },
+                    },
+                  }}
+                >
+                  {project.tech.map((tech, i) => (
+                    <motion.span
+                      key={i}
+                      className="bg-purple-200 text-purple-800 dark:bg-purple-800 dark:text-purple-200 px-2 py-1 rounded-full"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      {tech}
+                    </motion.span>
+                  ))}
+                </motion.div>
+
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-300 font-semibold hover:underline relative z-10"
+                >
+                  <FaGithub /> View on GitHub
+                </a>
+              </motion.div>
+            </Tilt>
           ))}
         </div>
       </div>

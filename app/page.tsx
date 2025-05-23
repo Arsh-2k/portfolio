@@ -11,23 +11,28 @@ import SectionWrapper from "./components/SectionWrapper";
 export default function Home() {
   return (
     <>
+      {/* 🌌 Navigation bar */}
       <Navbar />
-      <main>
-        <SectionWrapper>
+
+      {/* 🧭 Main content with accessibility landmarks */}
+      <main role="main" id="main-content">
+        <SectionWrapper id="home">
           <MainSection />
         </SectionWrapper>
-        <SectionWrapper>
+
+        <SectionWrapper id="about">
           <About />
         </SectionWrapper>
-        <SectionWrapper>
+
+        <SectionWrapper id="projects">
           <Projects />
         </SectionWrapper>
 
-        {/* ⬇️ Switched order here */}
-        <SectionWrapper>
+        <SectionWrapper id="contact">
           <Contact />
         </SectionWrapper>
-        <SectionWrapper>
+
+        <SectionWrapper id="idea-vault">
           <IdeaVault />
         </SectionWrapper>
       </main>
