@@ -1,10 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
-import ClientLayout from "./ClientLayout";
-import { SpeedInsights } from "@vercel/speed-insights/next"; // ✅ Added here
+import ClientWrapper from "./components/ClientWrapper";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
-// ✅ Server-side only — valid place for metadata
 export const metadata: Metadata = {
   title: "Arshpreet Singh Portfolio",
   description: "Created by Arshpreet Singh — Explore my projects, ideas, and more!",
@@ -30,9 +29,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="theme-color" content="#0f0a1b" media="(prefers-color-scheme: dark)" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
       </head>
-      <body>
-        <ClientLayout>{children}</ClientLayout>
-        <SpeedInsights /> {/* ✅ Added here */}
+      <body className="bg-white text-gray-900 dark:bg-black dark:text-white transition-colors duration-500">
+        <ClientWrapper>{children}</ClientWrapper>
+        <SpeedInsights />
       </body>
     </html>
   );

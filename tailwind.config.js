@@ -4,29 +4,29 @@ module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx}", // ✅ Optional if using `pages/`
   ],
   theme: {
     extend: {
       animation: {
-        // 🕺 Slow bounce effect for scroll or icons
-        'bounce-slow': 'bounce-slow 3s infinite',
-        // 🌟 Glowing text effect
+        'bounce-slow': 'bounceSlow 3s infinite',
         'text-glow': 'glow 2s ease-in-out infinite alternate',
-        // ⚡ Zap effect for lightning flash
         'zap': 'zap 0.4s ease-in-out',
+        'spinCoin': 'spinCoin 1s ease-in-out forwards',
       },
       keyframes: {
-        // 🧼 Custom bounce for more subtle motion
-        'bounce-slow': {
+        bounceSlow: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-4px)' },
         },
-        // ✨ Text glow that breathes
         glow: {
-          '0%': { textShadow: "0 0 10px rgba(168, 85, 247, 0.5)" },
-          '100%': { textShadow: "0 0 20px rgba(236, 72, 153, 0.8)" },
+          '0%': {
+            textShadow: '0 0 10px rgba(168, 85, 247, 0.5)',
+          },
+          '100%': {
+            textShadow: '0 0 20px rgba(236, 72, 153, 0.8)',
+          },
         },
-        // ⚡ Lightning zap brightness burst
         zap: {
           '0%, 100%': {
             filter: 'brightness(1)',
@@ -37,14 +37,26 @@ module.exports = {
             transform: 'scale(1.05)',
           },
         },
+        spinCoin: {
+          '0%': {
+            transform: 'rotateY(0deg) scale(1)',
+            filter: 'brightness(1)',
+          },
+          '50%': {
+            transform: 'rotateY(180deg) scale(1.15)',
+            filter: 'drop-shadow(0 0 15px gold) saturate(1.8)',
+          },
+          '100%': {
+            transform: 'rotateY(360deg) scale(1)',
+            filter: 'drop-shadow(0 0 15px silver)',
+          },
+        },
       },
       colors: {
-        // 🎨 Custom primary & dark color palette
         primary: '#3B82F6', // Tailwind blue-500
-        dark: '#0f0f0f',    // Rich black for deep UI
+        dark: '#0f0f0f',    // Rich black
       },
     },
   },
   plugins: [],
 };
-

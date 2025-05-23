@@ -35,7 +35,7 @@ export default function Projects() {
           <h2
             className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r 
             from-fuchsia-500 via-purple-500 to-blue-500 text-transparent 
-            bg-clip-text leading-[1.2]"
+            bg-clip-text leading-tight md:leading-[1.3] sm:leading-snug"
           >
             My Projects
           </h2>
@@ -63,20 +63,22 @@ export default function Projects() {
               <motion.div
                 className="group relative bg-white/80 dark:bg-black/30 backdrop-blur-md border 
                 border-purple-300/30 dark:border-purple-800/30 rounded-2xl p-6 shadow-md 
-                hover:shadow-purple-400/30 dark:hover:shadow-purple-500/30 transition-all duration-500 overflow-hidden"
+                hover:shadow-purple-400/30 dark:hover:shadow-purple-500/30 transition-all duration-500"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ type: 'spring', duration: 0.7, delay: index * 0.2 }}
                 viewport={{ once: true }}
               >
-                {/* Shimmer background on hover */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/10 via-transparent to-blue-200/10 dark:from-purple-900/10 dark:to-purple-700/10 rounded-2xl group-hover:blur-sm transition duration-700 pointer-events-none" />
+                {/* Shimmer layer */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/10 via-transparent to-blue-200/10 dark:from-purple-900/10 dark:to-purple-700/10 rounded-2xl group-hover:blur-sm transition duration-700 pointer-events-none z-0" />
 
-                <h3 className="text-2xl font-semibold mb-2 text-purple-700 dark:text-purple-300 relative z-10">
+                <h3 className="text-2xl font-semibold mb-2 text-purple-700 dark:text-purple-300 relative z-10 leading-snug">
                   {project.title}
                 </h3>
 
-                <p className="text-sm mb-4 relative z-10">{project.description}</p>
+                <p className="text-sm mb-4 relative z-10 leading-relaxed">
+                  {project.description}
+                </p>
 
                 <motion.div
                   className="flex flex-wrap gap-2 text-sm mb-4 relative z-10"
@@ -105,14 +107,17 @@ export default function Projects() {
                   ))}
                 </motion.div>
 
-                <a
+                <motion.a
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-300 font-semibold hover:underline relative z-10"
+                  className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-300 font-semibold relative z-10 hover:underline"
+                  whileHover={{ scale: 1.05, rotate: -1 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
                 >
                   <FaGithub /> View on GitHub
-                </a>
+                </motion.a>
               </motion.div>
             </Tilt>
           ))}

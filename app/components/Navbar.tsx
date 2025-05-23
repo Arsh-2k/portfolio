@@ -12,8 +12,10 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("#home");
+  const [isMounted, setIsMounted] = useState(false); // 👈 Fix hydration mismatch
 
   useEffect(() => {
+    setIsMounted(true); // ✅ Mount-safe animations only after client hydration
     const isDark = document.documentElement.classList.contains("dark");
     setDarkMode(isDark);
 
@@ -50,15 +52,14 @@ export default function Navbar() {
   };
 
   const showResumeToast = () => {
-    toast("Resume download coming soon 👀", {
-      icon: "📄",
-    });
+    toast("Resume download coming soon 👀", { icon: "📄" });
   };
 
   const navLinks = [
     { href: "#home", label: "Home" },
     { href: "#about", label: "About" },
     { href: "#projects", label: "Projects" },
+    { href: "#tools-tech", label: "Tools & Tech" },
     { href: "#contact", label: "Contact" },
     { href: "#idea-vault", label: "Idea Vault" },
   ];
@@ -74,13 +75,21 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className="text-3xl font-black text-transparent bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text animate-text-glow"
-        >
-          Arshpreet Singh
-        </motion.div>
+        <div>
+          {isMounted ? (
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-3xl font-black text-transparent bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text animate-text-glow"
+            >
+              Arshpreet Singh
+            </motion.div>
+          ) : (
+            <div className="text-3xl font-black text-transparent bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text">
+              Arshpreet Singh
+            </div>
+          )}
+        </div>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -128,65 +137,83 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button
-          className="md:hidden text-purple-500"
+        <motion.button
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle Menu"
+          className="md:hidden p-2 rounded-full bg-white/50 dark:bg-black/30 shadow-md border border-purple-500 hover:shadow-purple-500/30 transition-all"
+          whileTap={{ scale: 0.8, rotate: 15 }}
+          whileHover={{
+            scale: 1.15,
+            boxShadow: "0 0 8px rgba(168, 85, 247, 0.6)",
+          }}
         >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          {menuOpen ? <X size={24} className="text-purple-600" /> : <Menu size={24} className="text-purple-500" />}
+        </motion.button>
       </div>
 
       {/* Mobile Drawer */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden px-4 pb-4 pt-2 space-y-3 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gradient-to-b from-white/70 to-white/30 dark:from-black/50 dark:to-[#1a0024]/70 backdrop-blur-lg shadow-inner"
+            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="md:hidden mx-4 mt-2 p-4 space-y-3 rounded-2xl border border-purple-400/30 
+              bg-gradient-to-br from-white/80 via-white/60 to-purple-100/60 dark:from-black/50 dark:via-[#1a0024]/40 dark:to-[#1a0024]/60
+              shadow-2xl backdrop-blur-md"
           >
             {navLinks.map((link) => (
-              <Link
+              <motion.div
+                whileHover={{ scale: 1.05, x: 5 }}
+                whileTap={{ scale: 0.95 }}
                 key={link.href}
-                href={link.href}
-                className={clsx(
-                  "block hover:text-purple-500 hover:pl-2 transition-all duration-300",
-                  activeLink === link.href && "text-purple-600 dark:text-purple-400 underline underline-offset-4"
-                )}
-                onClick={() => setMenuOpen(false)}
               >
-                {link.label}
-              </Link>
+                <Link
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className={clsx(
+                    "block text-sm font-semibold hover:text-purple-600 transition-all",
+                    activeLink === link.href && "text-purple-600 dark:text-purple-400 underline underline-offset-4"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              </motion.div>
             ))}
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05, x: 5 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => {
                 showResumeToast();
                 setMenuOpen(false);
               }}
-              className="flex items-center gap-1 hover:text-purple-500 hover:pl-2 transition-all duration-300"
+              className="flex items-center gap-1 text-sm font-semibold hover:text-purple-600 transition-all"
             >
               <Download size={16} /> Resume
-            </button>
+            </motion.button>
 
             <div className="flex items-center gap-2 pt-2">
               <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Theme</span>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.2, rotate: 5 }}
                 onClick={() => {
                   toggleDarkMode();
                   setMenuOpen(false);
                 }}
                 className={clsx(
-                  "p-2 rounded-full transition-all shadow-md",
-                  darkMode ? "bg-purple-600 hover:bg-purple-700" : "bg-purple-400 hover:bg-purple-500",
-                  "hover:scale-110"
+                  "p-2 rounded-full shadow-md border border-purple-400",
+                  darkMode ? "bg-purple-600 hover:bg-purple-700" : "bg-purple-400 hover:bg-purple-500"
                 )}
                 aria-label="Toggle Dark Mode (Mobile)"
               >
                 {darkMode ? <Moon className="text-white w-5 h-5" /> : <Sun className="text-yellow-300 w-5 h-5" />}
-              </button>
+              </motion.button>
             </div>
+
+            {/* Optional Kilua Line Pulse */}
+            <div className="h-1 w-full bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 animate-pulse rounded-full mt-4" />
           </motion.div>
         )}
       </AnimatePresence>

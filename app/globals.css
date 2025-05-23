@@ -1,18 +1,23 @@
-/* Tailwind layers */
+/* ---------------- TAILWIND LAYERS ---------------- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ---------------- GLOBAL STYLES ---------------- */
 
-/* Smooth scroll + better font rendering */
+/* 🌍 Universal enhancements */
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar styling */
+/* 🌐 Global body setup with dark mode transitions */
+body {
+  @apply bg-white text-black dark:bg-[#0f0a1b] dark:text-white font-sans transition-colors duration-500 ease-in-out;
+}
+
+/* 🖱️ Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -20,34 +25,30 @@ html {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(168, 85, 247, 0.5); /* Tailwind's purple-500 */
+  background-color: rgba(168, 85, 247, 0.5); /* purple-500 */
   border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(168, 85, 247, 0.7);
 }
 
-/* Text selection highlight */
-::selection {
-  background-color: #a855f7; /* purple-500 */
-  color: white;
-}
-
-/* Default body theme setup */
-body {
-  @apply bg-white text-black dark:bg-[#0f0a1b] dark:text-white transition-colors duration-500 font-sans;
-}
-
-/* Skip nav focus style */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid #a855f7; /* purple-500 */
+/* 🎯 Accessible focus outlines */
+:focus-visible {
+  outline: 2px solid #a855f7;
   outline-offset: 4px;
   transition: outline-color 0.3s ease;
 }
 
+/* 🔦 Highlight text selection */
+::selection {
+  background-color: #a855f7;
+  color: white;
+}
+
 /* ---------------- ANIMATIONS ---------------- */
 
-/* ⚡ Glowing name text */
+/* ⚡ Animated glowing text (e.g., name/brand) */
 @keyframes zap {
   0%, 100% {
     text-shadow: 0 0 0px transparent;
@@ -63,13 +64,13 @@ textarea:focus-visible {
   animation: zap 1.4s ease-in-out infinite;
 }
 
-/* 🎯 Fade-in for sections */
+/* 🧼 Clean fade-up entry for sections */
 @keyframes fade-up {
-  0% {
+  from {
     opacity: 0;
     transform: translateY(20px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
@@ -78,14 +79,82 @@ textarea:focus-visible {
   animation: fade-up 0.6s ease-out forwards;
 }
 
+/* 🌬️ Breathing effect for containers */
+@keyframes breath {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.015);
+  }
+}
+.animate-breath {
+  animation: breath 4s ease-in-out infinite;
+}
+
+/* 🌟 Gold-Silver Gradient Shine Animation */
+@keyframes gradient-shine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+.animate-gradient-shine {
+  background: linear-gradient(
+    90deg,
+    #facc15, /* yellow-400 */
+    #e5e7eb, /* zinc-200 */
+    #facc15
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradient-shine 3s ease-in-out infinite;
+}
+
+/* 🌈 Rainbow Shimmer Gradient (optional) */
+@keyframes rainbow {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+.animate-rainbow {
+  background: linear-gradient(
+    90deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #8f00ff
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: rainbow 5s linear infinite;
+}
+
 /* ---------------- UTILITIES ---------------- */
 
-/* Prevent text dragging / annoying selects */
+/* 🚫 Prevent dragging/selection of text/icons */
 .noselect {
   user-select: none;
 }
 
-/* Glassmorphism helpers (if needed later) */
+/* 🧊 Glassmorphism utility */
 .glass {
   @apply backdrop-blur-md bg-white/20 dark:bg-white/5 border border-white/10 rounded-xl;
+}
+
+/* ✨ Optional: Custom container paddings */
+.container-padding {
+  @apply px-4 sm:px-8 lg:px-16;
 }
