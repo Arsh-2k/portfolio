@@ -6,21 +6,30 @@ import Tilt from 'react-parallax-tilt';
 import ParticlesBackground from '../components/ParticlesBackground';
 import { useMediaQuery } from 'react-responsive';
 
+// Optional tilt wrapper for avatar
+const AvatarWrapper = ({ children }: { children: React.ReactNode }) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  return isMobile ? (
+    <div>{children}</div>
+  ) : (
+    <Tilt glareEnable glareMaxOpacity={0.2} scale={1.1} transitionSpeed={400}>
+      {children}
+    </Tilt>
+  );
+};
+
 export default function MainSection() {
   const [zap, setZap] = useState(false);
   const [spin, setSpin] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const [bgSwap, setBgSwap] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true); // Safe hydration check
+    setIsClient(true);
   }, []);
-
-  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const triggerToss = () => {
     if (spin) return;
-
     setZap(true);
     setSpin(true);
     setBgSwap(true);
@@ -29,22 +38,15 @@ export default function MainSection() {
       setZap(false);
       setSpin(false);
       setBgSwap(false);
-    }, 1500); // Coin toss duration
+    }, 1500);
   };
-
-  const AvatarWrapper = ({ children }: { children: React.ReactNode }) =>
-    isMobile ? <div>{children}</div> : (
-      <Tilt glareEnable glareMaxOpacity={0.2} scale={1.1} transitionSpeed={400}>
-        {children}
-      </Tilt>
-    );
 
   return (
     <section
       id="home"
       className={`w-full min-h-screen flex flex-col justify-center items-center
-        px-4 sm:px-6 md:px-10 pt-24 sm:pt-28 pb-32 text-center text-black dark:text-white
-        transition-all duration-500 overflow-hidden
+        px-4 sm:px-6 md:px-10 pt-24 sm:pt-28 pb-32 text-center
+        text-black dark:text-white transition-all duration-500
         ${
           bgSwap
             ? 'bg-gradient-to-br from-yellow-100 via-white to-blue-100 dark:from-yellow-900 dark:via-black dark:to-indigo-900'
@@ -53,13 +55,14 @@ export default function MainSection() {
     >
       {isClient && <ParticlesBackground />}
 
-      {/* 🎯 Avatar Coin Toss */}
+      {/* 🪙 Avatar Coin Toss */}
       {isClient && (
         <AvatarWrapper>
           <motion.div
-            className={`relative cursor-pointer transition-all duration-300 rounded-full border-[6px]
+            className={`relative cursor-pointer transition-all duration-300
+              rounded-full border-[6px] shadow-xl
               ${spin ? '' : 'animate-spin-slow'}
-              border-gradient-gold-silver shadow-xl`}
+              border-gradient-gold-silver`}
             onClick={triggerToss}
             onMouseEnter={() => setZap(true)}
             onMouseLeave={() => setZap(false)}
@@ -67,7 +70,8 @@ export default function MainSection() {
             <motion.img
               src="/avatar.jpg"
               alt="Arshpreet Singh Avatar"
-              className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 rounded-full pointer-events-none select-none"
+              className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64
+                rounded-full pointer-events-none select-none"
               animate={
                 spin
                   ? {
@@ -88,13 +92,14 @@ export default function MainSection() {
         </AvatarWrapper>
       )}
 
-      {/* 🔥 Heading */}
+      {/* 🎯 Heading */}
       <motion.h1
         className="mt-8 text-4xl sm:text-5xl md:text-6xl font-extrabold z-10
           bg-gradient-to-r from-purple-600 via-blue-500 to-fuchsia-500
           bg-clip-text text-transparent
           hover:drop-shadow-[0_0_20px_rgba(147,51,234,0.7)]
-          transition duration-300 leading-tight"
+          transition duration-300
+          leading-snug tracking-wide whitespace-nowrap pb-2 overflow-visible"
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
@@ -112,7 +117,7 @@ export default function MainSection() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}
       >
-        • Programming - Level 1 • Web Developer - Level 1 • Open Source Contributor - Level 1 • Chess & Coding Enthusiast
+        • Programming - Level 1 • Web Developer - Level 1 • Open Source Contributor - Level 1 • Chess &amp; Coding Enthusiast
       </motion.p>
     </section>
   );

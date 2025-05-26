@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import MainSection from './sections/main';
 import About from './sections/about';
 import Projects from './sections/Projects';
-import ToolsTech from './sections/tools-tech';  // Import ToolsTech
+import ToolsTech from './sections/tools-tech';
 import Contact from './sections/contact';
 import IdeaVault from './sections/IdeaVault';
 import SectionWrapper from './components/SectionWrapper';
@@ -12,11 +12,11 @@ import SectionWrapper from './components/SectionWrapper';
 export default function Home() {
   return (
     <>
-      {/* 🌌 Navigation bar */}
+      {/* 🌌 Persistent Navbar */}
       <Navbar />
 
-      {/* 🧭 Main content with accessibility landmarks */}
-      <main role="main" id="main-content">
+      {/* 🧭 Main Content Area with Semantic Sections */}
+      <main id="main-content" role="main" className="relative z-10 overflow-x-hidden">
         <SectionWrapper id="home">
           <MainSection />
         </SectionWrapper>
@@ -29,7 +29,6 @@ export default function Home() {
           <Projects />
         </SectionWrapper>
 
-        {/* ToolsTech moved here, before Contact */}
         <SectionWrapper id="tools-tech">
           <ToolsTech />
         </SectionWrapper>
@@ -45,4 +44,3 @@ export default function Home() {
     </>
   );
 }
-

@@ -9,9 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-icons": "^1.3.2",
+    "@tsparticles/engine": "^3.8.1",
+    "@tsparticles/move-base": "^3.8.1",
+    "@tsparticles/plugin-hex-color": "^3.8.1",
+    "@tsparticles/react": "^3.0.0",
     "@vercel/speed-insights": "^1.2.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.12.1",
+    "framer-motion": "^12.12.2",
     "lucide-react": "^0.511.0",
     "next": "15.3.2",
     "react": "^19.0.0",
@@ -20,8 +26,8 @@
     "react-icons": "^5.5.0",
     "react-parallax-tilt": "^1.7.295",
     "react-responsive": "^10.0.1",
-    "react-tsparticles": "^2.12.2",
-    "tsparticles": "^3.8.1",
+    "tailwind-variants": "^1.0.0",
+    "tsparticles-interaction-external-trail": "^2.12.0",
     "typewriter-effect": "^2.22.0"
   },
   "devDependencies": {

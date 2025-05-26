@@ -6,14 +6,14 @@ import Tilt from 'react-parallax-tilt';
 
 const projects = [
   {
-    title: 'Portfolio Website',
+    title: '🚀 Portfolio Website',
     description:
-      'A modern developer portfolio built with Next.js, Tailwind CSS, and framer-motion.',
+      'A modern developer portfolio built with Next.js, Tailwind CSS, and Framer Motion.',
     github: 'https://github.com/Arsh-2k/portfolio',
     tech: ['Next.js', 'Tailwind CSS', 'Framer Motion'],
   },
   {
-    title: 'RepVision',
+    title: '🏋️ RepVision',
     description:
       'A fitness web app with YouTube workout tutorials, clean UI, and interactive features.',
     github: 'https://github.com/Arsh-2k/RepVision',
@@ -25,36 +25,40 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="w-full min-h-screen flex flex-col justify-center items-center px-6 py-20
-      bg-gradient-to-br from-white via-gray-100 to-purple-100
-      dark:from-black dark:via-zinc-900 dark:to-purple-950
-      text-gray-900 dark:text-white transition-colors duration-500 scroll-mt-24"
+      className="w-full min-h-screen flex flex-col justify-center items-center px-6 py-24 
+      bg-gradient-to-br from-white via-gray-100 to-purple-100 
+      dark:from-black dark:via-zinc-900 dark:to-purple-950 
+      text-gray-900 dark:text-white scroll-mt-24"
     >
       <div className="max-w-6xl w-full">
-        <div className="text-center mb-20">
+        {/* Heading */}
+        <div className="text-center mb-20 overflow-visible">
           <h2
-            className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r 
-            from-fuchsia-500 via-purple-500 to-blue-500 text-transparent 
-            bg-clip-text leading-tight md:leading-[1.3] sm:leading-snug"
+            className="text-4xl md:text-5xl font-extrabold 
+            bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500 
+            text-transparent bg-clip-text 
+            leading-tight tracking-wide whitespace-nowrap pb-2"
           >
             My Projects
           </h2>
 
           <motion.div
-            className="h-[4px] mt-4 mx-auto rounded-full bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500"
+            className="h-[4px] mt-2 mx-auto w-0 rounded-full 
+            bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500"
             initial={{ width: 0 }}
             whileInView={{ width: '100%' }}
             transition={{ duration: 1, ease: 'easeInOut' }}
           />
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 sm:grid-cols-1">
+        {/* Cards */}
+        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2">
           {projects.map((project, index) => (
             <Tilt
               key={index}
               tiltMaxAngleX={10}
               tiltMaxAngleY={10}
-              glareEnable={true}
+              glareEnable
               glareMaxOpacity={0.2}
               transitionSpeed={1000}
               scale={1.03}
@@ -66,17 +70,16 @@ export default function Projects() {
                 hover:shadow-purple-400/30 dark:hover:shadow-purple-500/30 transition-all duration-500"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ type: 'spring', duration: 0.7, delay: index * 0.2 }}
                 viewport={{ once: true }}
+                transition={{ type: 'spring', duration: 0.7, delay: index * 0.2 }}
               >
-                {/* Shimmer layer */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/10 via-transparent to-blue-200/10 dark:from-purple-900/10 dark:to-purple-700/10 rounded-2xl group-hover:blur-sm transition duration-700 pointer-events-none z-0" />
 
                 <h3 className="text-2xl font-semibold mb-2 text-purple-700 dark:text-purple-300 relative z-10 leading-snug">
                   {project.title}
                 </h3>
 
-                <p className="text-sm mb-4 relative z-10 leading-relaxed">
+                <p className="text-sm mb-4 relative z-10 text-gray-800 dark:text-white/90 leading-relaxed">
                   {project.description}
                 </p>
 

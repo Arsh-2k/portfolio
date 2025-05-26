@@ -12,10 +12,10 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("#home");
-  const [isMounted, setIsMounted] = useState(false); // 👈 Fix hydration mismatch
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // ✅ Mount-safe animations only after client hydration
+    setIsMounted(true);
     const isDark = document.documentElement.classList.contains("dark");
     setDarkMode(isDark);
 
@@ -38,9 +38,7 @@ export default function Navbar() {
     );
 
     sections.forEach((section) => observer.observe(section));
-    return () => {
-      sections.forEach((section) => observer.unobserve(section));
-    };
+    return () => sections.forEach((section) => observer.unobserve(section));
   }, []);
 
   const toggleDarkMode = () => {
@@ -67,7 +65,7 @@ export default function Navbar() {
   return (
     <nav
       className={clsx(
-        "w-full fixed top-0 left-0 z-50 transition-all duration-500 backdrop-blur-xl",
+        "fixed top-0 left-0 w-full z-50 transition-all duration-500 backdrop-blur-xl",
         "bg-gradient-to-r from-purple-100/70 via-white/40 to-purple-100/70",
         "dark:from-[#1a0024]/80 dark:via-black/30 dark:to-[#1a0024]/80",
         scrolled && "shadow-md"
@@ -91,12 +89,15 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Desktop Nav */}
+        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-gray-700 dark:text-gray-300">
           {navLinks.map((link) => (
             <motion.div
               key={link.href}
-              whileHover={{ scale: 1.2, textShadow: "0px 0px 8px rgba(168, 85, 247, 0.7)" }}
+              whileHover={{
+                scale: 1.2,
+                textShadow: "0px 0px 8px rgba(168, 85, 247, 0.7)",
+              }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -104,7 +105,8 @@ export default function Navbar() {
                 href={link.href}
                 className={clsx(
                   "transition-all duration-300 hover:text-purple-500 hover:drop-shadow-md",
-                  activeLink === link.href && "text-purple-600 dark:text-purple-400 underline underline-offset-4"
+                  activeLink === link.href &&
+                    "text-purple-600 dark:text-purple-400 underline underline-offset-4"
                 )}
               >
                 {link.label}
@@ -126,12 +128,18 @@ export default function Navbar() {
               onClick={toggleDarkMode}
               className={clsx(
                 "p-2 rounded-full transition-all shadow-md",
-                darkMode ? "bg-purple-600 hover:bg-purple-700" : "bg-purple-400 hover:bg-purple-500",
+                darkMode
+                  ? "bg-purple-600 hover:bg-purple-700"
+                  : "bg-purple-400 hover:bg-purple-500",
                 "hover:scale-110"
               )}
               aria-label="Toggle Dark Mode"
             >
-              {darkMode ? <Moon className="text-white w-5 h-5" /> : <Sun className="text-yellow-300 w-5 h-5" />}
+              {darkMode ? (
+                <Moon className="text-white w-5 h-5" />
+              ) : (
+                <Sun className="text-yellow-300 w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -147,7 +155,11 @@ export default function Navbar() {
             boxShadow: "0 0 8px rgba(168, 85, 247, 0.6)",
           }}
         >
-          {menuOpen ? <X size={24} className="text-purple-600" /> : <Menu size={24} className="text-purple-500" />}
+          {menuOpen ? (
+            <X size={24} className="text-purple-600" />
+          ) : (
+            <Menu size={24} className="text-purple-500" />
+          )}
         </motion.button>
       </div>
 
@@ -164,17 +176,14 @@ export default function Navbar() {
               shadow-2xl backdrop-blur-md"
           >
             {navLinks.map((link) => (
-              <motion.div
-                whileHover={{ scale: 1.05, x: 5 }}
-                whileTap={{ scale: 0.95 }}
-                key={link.href}
-              >
+              <motion.div whileHover={{ scale: 1.05, x: 5 }} whileTap={{ scale: 0.95 }} key={link.href}>
                 <Link
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
                   className={clsx(
                     "block text-sm font-semibold hover:text-purple-600 transition-all",
-                    activeLink === link.href && "text-purple-600 dark:text-purple-400 underline underline-offset-4"
+                    activeLink === link.href &&
+                      "text-purple-600 dark:text-purple-400 underline underline-offset-4"
                   )}
                 >
                   {link.label}
@@ -204,15 +213,21 @@ export default function Navbar() {
                 }}
                 className={clsx(
                   "p-2 rounded-full shadow-md border border-purple-400",
-                  darkMode ? "bg-purple-600 hover:bg-purple-700" : "bg-purple-400 hover:bg-purple-500"
+                  darkMode
+                    ? "bg-purple-600 hover:bg-purple-700"
+                    : "bg-purple-400 hover:bg-purple-500"
                 )}
                 aria-label="Toggle Dark Mode (Mobile)"
               >
-                {darkMode ? <Moon className="text-white w-5 h-5" /> : <Sun className="text-yellow-300 w-5 h-5" />}
+                {darkMode ? (
+                  <Moon className="text-white w-5 h-5" />
+                ) : (
+                  <Sun className="text-yellow-300 w-5 h-5" />
+                )}
               </motion.button>
             </div>
 
-            {/* Optional Kilua Line Pulse */}
+            {/* Kilua Pulse Bar */}
             <div className="h-1 w-full bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 animate-pulse rounded-full mt-4" />
           </motion.div>
         )}

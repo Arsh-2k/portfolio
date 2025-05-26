@@ -134,6 +134,7 @@ export default function Contact() {
           ))}
         </motion.div>
 
+        {/* 🧃 Casual Outro */}
         <p className="mt-6 text-center text-gray-600 dark:text-gray-400">
           Or just want to have a casual chat? DM me on{' '}
           <a
