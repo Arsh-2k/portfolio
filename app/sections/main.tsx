@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import ParticlesBackground from '../components/ParticlesBackground';
+import SocialBar from '../components/SocialBar';
 import { useMediaQuery } from 'react-responsive';
 
-// Optional tilt wrapper for avatar
 const AvatarWrapper = ({ children }: { children: React.ReactNode }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   return isMobile ? (
@@ -33,7 +33,6 @@ export default function MainSection() {
     setZap(true);
     setSpin(true);
     setBgSwap(true);
-
     setTimeout(() => {
       setZap(false);
       setSpin(false);
@@ -54,6 +53,11 @@ export default function MainSection() {
         }`}
     >
       {isClient && <ParticlesBackground />}
+
+      {/* 💫 Social Bar */}
+      <div className="absolute bottom-6 left-6 z-20">
+        <SocialBar />
+      </div>
 
       {/* 🪙 Avatar Coin Toss */}
       {isClient && (
@@ -94,12 +98,12 @@ export default function MainSection() {
 
       {/* 🎯 Heading */}
       <motion.h1
-        className="mt-8 text-4xl sm:text-5xl md:text-6xl font-extrabold z-10
+        className="mt-8 text-3xl sm:text-4xl md:text-5xl font-extrabold z-10
           bg-gradient-to-r from-purple-600 via-blue-500 to-fuchsia-500
           bg-clip-text text-transparent
           hover:drop-shadow-[0_0_20px_rgba(147,51,234,0.7)]
           transition duration-300
-          leading-snug tracking-wide whitespace-nowrap pb-2 overflow-visible"
+          leading-snug tracking-wide whitespace-normal break-words pb-2 overflow-visible"
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}

@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import ParticlesBackground from '../components/ParticlesBackground';
+import SocialBar from '../components/SocialBar';
 import { useMediaQuery } from 'react-responsive';
 
 export default function HeroSection() {
   const [zap, setZap] = useState(false);
   const [spin, setSpin] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [bgSwap, setBgSwap] = useState(false); // Optional toggle
+  const [bgSwap, setBgSwap] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -20,11 +21,9 @@ export default function HeroSection() {
 
   const triggerToss = () => {
     if (spin) return;
-
     setZap(true);
     setSpin(true);
     setBgSwap(true);
-
     setTimeout(() => {
       setZap(false);
       setSpin(false);
@@ -52,6 +51,11 @@ export default function HeroSection() {
       }`}
     >
       {isClient && <ParticlesBackground />}
+
+      {/* 💫 Social Bar */}
+      <div className="absolute bottom-6 left-6 z-20">
+        <SocialBar />
+      </div>
 
       {/* 🎯 Coin Toss Avatar */}
       {isClient && (

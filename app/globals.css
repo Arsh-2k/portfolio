@@ -14,14 +14,13 @@
     min-height: 100vh;
   }
 
-  /* 🌐 Global body setup with dark mode transitions */
   body {
-    @apply bg-white text-black dark:bg-[#0f0a1b] dark:text-white font-sans transition-colors duration-500 ease-in-out;
     height: 100%;
     min-height: 100vh;
+    @apply bg-white text-black dark:bg-[#0f0a1b] dark:text-white font-sans transition-colors duration-500 ease-in-out;
   }
 
-  /* 🔦 Highlight text selection */
+  /* 🔦 Highlighted text selection */
   ::selection {
     @apply bg-purple-500 text-white;
   }
@@ -33,7 +32,7 @@
     transition: outline-color 0.3s ease;
   }
 
-  /* 🖱️ Scrollbar styling */
+  /* 🖱️ Scrollbar styling (WebKit only) */
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -112,22 +111,18 @@
 
 /* ---------------- UTILITIES ---------------- */
 @layer utilities {
-  /* ⚡ Animated glowing text */
   .animate-zap {
     animation: zap 1.4s ease-in-out infinite;
   }
 
-  /* 🧼 Fade-up effect */
   .fade-up {
     animation: fade-up 0.6s ease-out forwards;
   }
 
-  /* 🌬️ Breathing animation */
   .animate-breath {
     animation: breath 4s ease-in-out infinite;
   }
 
-  /* 🌟 Gold-Silver Gradient Shine */
   .animate-gradient-shine {
     background: linear-gradient(90deg, #facc15, #e5e7eb, #facc15);
     background-size: 200% auto;
@@ -137,7 +132,6 @@
     animation: gradient-shine 3s ease-in-out infinite;
   }
 
-  /* 🌈 Rainbow Shimmer */
   .animate-rainbow {
     background: linear-gradient(
       90deg,
@@ -156,28 +150,23 @@
     animation: rainbow 5s linear infinite;
   }
 
-  /* ⚡ Horizontal animated gradient (used in titles) */
   .animate-gradient-x {
     background-size: 200% 200%;
     animation: gradient-x 6s ease infinite;
   }
 
-  /* 🚫 Prevent dragging/selection */
   .noselect {
     user-select: none;
   }
 
-  /* 🧊 Glassmorphism utility */
   .glass {
     @apply backdrop-blur-md bg-white/20 dark:bg-white/5 border border-white/10 rounded-xl;
   }
 
-  /* ✨ Container paddings */
   .container-padding {
     @apply px-4 sm:px-8 lg:px-16;
   }
 
-  /* 🎯 Focus outline utility */
   .focus-outline {
     @apply outline-none focus-visible:outline-2 focus-visible:outline-purple-500 focus-visible:outline-offset-4 transition-all;
   }
