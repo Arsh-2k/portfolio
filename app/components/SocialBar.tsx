@@ -13,6 +13,8 @@ import {
 } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { GiCricketBat } from "react-icons/gi";
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
 
 const icons = [
   { icon: <FaHome />, link: "#home", label: "Home" },
@@ -46,6 +48,8 @@ const SocialBar = () => {
   const [windowWidth, setWindowWidth] = useState<number | null>(null);
   const [tossResult, setTossResult] = useState<string | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
 
   useEffect(() => {
     setIsClient(true);
@@ -81,9 +85,11 @@ const SocialBar = () => {
     }, 1500);
   };
 
+  const sharedGradient =
+    "bg-gradient-to-tr from-[#7f00ff] via-[#e100ff] to-[#8e2de2]";
+
   return (
     <div className="fixed bottom-4 left-4 sm:left-1/2 sm:-translate-x-1/2 z-[9999]">
-      {/* Mobile Toggle */}
       <motion.button
         whileHover={{ scale: 1.2, rotate: 10 }}
         whileTap={{ scale: 0.95 }}
@@ -94,7 +100,6 @@ const SocialBar = () => {
         {isOpen ? <FaTimes /> : <FaBars />}
       </motion.button>
 
-      {/* Social Bar */}
       <AnimatePresence>
         {isClient && (isOpen || windowWidth! >= 640) && (
           <motion.div
@@ -103,7 +108,12 @@ const SocialBar = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 120, damping: 16 }}
-            className="flex flex-row items-center gap-3 sm:gap-5 p-3 sm:px-7 sm:py-4 backdrop-blur-lg bg-gradient-to-br from-[#190029]/80 via-[#1e003f]/80 to-[#2c004c]/80 border border-white/10 shadow-2xl rounded-xl sm:rounded-full animate-breath-glow relative mt-2 sm:mt-0"
+            className={`flex flex-row items-center gap-3 sm:gap-5 p-3 sm:px-7 sm:py-4 rounded-xl sm:rounded-full border border-white/10 shadow-2xl animate-breath-glow relative mt-2 sm:mt-0 backdrop-blur-lg
+              ${
+                isDark
+                  ? "bg-gradient-to-br from-[#190029]/80 via-[#1e003f]/80 to-[#2c004c]/80"
+                  : "bg-gradient-to-br from-[#ffffff]/60 via-[#e2e2ff]/60 to-[#e2f0ff]/60"
+              }`}
           >
             {icons.map(({ icon, link, label }, index) => {
               const isHovered = hoveredIndex === index;
@@ -146,7 +156,7 @@ const SocialBar = () => {
                       y: isHovered ? -3 : 0,
                     }}
                     transition={{ type: "spring", stiffness: 200, damping: 16 }}
-                    className="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#7f00ff] via-[#e100ff] to-[#8e2de2] text-xl neon-glow border border-white/10 shadow-xl hover:shadow-purple-500/50 transition-shadow duration-300"
+                    className={`w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full ${sharedGradient} text-xl neon-glow border border-white/10 shadow-xl hover:shadow-purple-500/50 transition-shadow duration-300`}
                   >
                     {icon}
                   </motion.div>
@@ -154,7 +164,7 @@ const SocialBar = () => {
               );
             })}
 
-            {/* Toss Coin Button */}
+            {/* Coin Toss Button */}
             <motion.button
               onClick={handleToss}
               whileTap={{ scale: 0.9 }}
@@ -189,13 +199,46 @@ const SocialBar = () => {
                   y: hoveredIndex === icons.length ? -3 : 0,
                 }}
                 transition={{ type: "spring", stiffness: 200, damping: 16 }}
-                className="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-green-700 via-green-600 to-lime-500 text-xl neon-glow border border-white/10 shadow-xl hover:shadow-green-500/50 transition-shadow duration-300"
+                className={`w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full ${sharedGradient} text-xl neon-glow border border-white/10 shadow-xl hover:shadow-purple-500/50 transition-shadow duration-300`}
               >
                 <GiCricketBat />
               </motion.div>
             </motion.button>
 
-            {/* Toss Coin Animation */}
+            {/* Theme Toggle Button */}
+            <motion.button
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.2, rotate: 10 }}
+              onMouseEnter={() => setHoveredIndex(icons.length + 1)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className="relative group/icon flex flex-col items-center text-white"
+            >
+              <motion.span
+                initial={{ opacity: 0, scale: 0.5, y: -6 }}
+                animate={
+                  hoveredIndex === icons.length + 1
+                    ? { opacity: 1, scale: 1, y: -12 }
+                    : { opacity: 0, scale: 0.5, y: -6 }
+                }
+                transition={{ type: "spring", stiffness: 250, damping: 12 }}
+                className="absolute -top-8 sm:-top-10 text-[10px] sm:text-xs bg-white text-black dark:bg-zinc-900 dark:text-white px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap"
+              >
+                {isDark ? "Shine Bright 🌞" : "Enter Galaxy 🌙"}
+              </motion.span>
+
+              <motion.div
+                className={`w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full ${sharedGradient} text-xl neon-glow border border-white/10 shadow-xl hover:shadow-purple-500/50 transition-shadow duration-300`}
+              >
+                {isDark ? (
+                  <Moon className="w-5 h-5 sm:w-6 sm:h-6" />
+                ) : (
+                  <Sun className="w-5 h-5 sm:w-6 sm:h-6" />
+                )}
+              </motion.div>
+            </motion.button>
+
+            {/* Coin Flip Animation */}
             <AnimatePresence>
               {isFlipping && (
                 <motion.div
