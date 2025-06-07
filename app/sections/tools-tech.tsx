@@ -1,47 +1,47 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 export default function ToolsTech() {
   const categories = [
     {
-      title: '💻 Languages',
+      title: "💻 Languages",
       items: [
-        { name: 'C', logo: 'c' },
-        { name: 'C++', logo: 'c%2B%2B' },
-        { name: 'Python', logo: 'python' },
-        { name: 'JavaScript', logo: 'javascript' },
+        { name: "C", logo: "c" },
+        { name: "C++", logo: "c%2B%2B" },
+        { name: "Python", logo: "python" },
+        { name: "JavaScript", logo: "javascript" },
       ],
     },
     {
-      title: '🌐 Frontend',
+      title: "🌐 Frontend",
       items: [
-        { name: 'HTML5', logo: 'html5' },
-        { name: 'CSS3', logo: 'css3' },
-        { name: 'TailwindCSS', logo: 'tailwind-css' },
-        { name: 'React', logo: 'react', logoColor: '61DAFB' },
+        { name: "HTML5", logo: "html5" },
+        { name: "CSS3", logo: "css3" },
+        { name: "TailwindCSS", logo: "tailwind-css" },
+        { name: "React", logo: "react", logoColor: "61DAFB" },
       ],
     },
     {
-      title: '🧠 Backend',
+      title: "🧠 Backend",
       items: [
-        { name: 'Node.js', logo: 'nodedotjs' },
-        { name: 'Express.js', logo: 'express' },
+        { name: "Node.js", logo: "nodedotjs" },
+        { name: "Express.js", logo: "express" },
       ],
     },
     {
-      title: '🗃️ Database',
-      items: [{ name: 'MongoDB', logo: 'mongodb' }],
+      title: "🗃️ Database",
+      items: [{ name: "MongoDB", logo: "mongodb" }],
     },
     {
-      title: '⚙️ Tools & Platforms',
+      title: "⚙️ Tools & Platforms",
       items: [
-        { name: 'Git', logo: 'git' },
-        { name: 'GitHub', logo: 'github' },
-        { name: 'VS Code', logo: 'visual-studio-code' },
-        { name: 'Vercel', logo: 'vercel' },
-        { name: 'Appwrite', logo: 'appwrite' },
-        { name: 'Figma', logo: 'figma' },
+        { name: "Git", logo: "git" },
+        { name: "GitHub", logo: "github" },
+        { name: "VS Code", logo: "visual-studio-code" },
+        { name: "Vercel", logo: "vercel" },
+        { name: "Appwrite", logo: "appwrite" },
+        { name: "Figma", logo: "figma" },
       ],
     },
   ];
@@ -75,7 +75,7 @@ export default function ToolsTech() {
           whileInView={{ scaleX: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          style={{ transformOrigin: 'center' }}
+          style={{ transformOrigin: "center" }}
         />
 
         {/* Tech Categories */}
@@ -88,8 +88,10 @@ export default function ToolsTech() {
             transition={{ delay: 0.1 * index, duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-2xl sm:text-3xl font-semibold mb-6
-                           text-purple-700 dark:text-purple-300 tracking-wide">
+            <h2
+              className="text-2xl sm:text-3xl font-semibold mb-6
+                           text-purple-700 dark:text-purple-300 tracking-wide"
+            >
               {category.title}
             </h2>
 
@@ -98,8 +100,8 @@ export default function ToolsTech() {
                 <motion.img
                   key={`${name}-${i}`}
                   src={`https://img.shields.io/badge/${encodeURIComponent(
-                    name
-                  )}-555?style=for-the-badge&logo=${logo}&logoColor=${logoColor ?? 'white'}`}
+                    name,
+                  )}-555?style=for-the-badge&logo=${logo}&logoColor=${logoColor ?? "white"}`}
                   alt={name}
                   className="h-12 w-full object-contain cursor-pointer
                              transition-transform duration-300 hover:scale-105

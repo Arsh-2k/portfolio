@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from "react";
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -13,8 +13,6 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   if (!mounted) return null; // Avoid mismatch during SSR
 
   return (
-    <div className="transition-all duration-500 ease-in-out">
-      {children}
-    </div>
+    <div className="transition-all duration-500 ease-in-out">{children}</div>
   );
 }

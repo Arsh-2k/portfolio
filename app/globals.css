@@ -51,11 +51,15 @@
 
 /* ---------------- ANIMATIONS ---------------- */
 @keyframes zap {
-  0%, 100% {
+  0%,
+  100% {
     text-shadow: 0 0 0px transparent;
   }
   50% {
-    text-shadow: 0 0 5px #a855f7, 0 0 10px #a855f7, 0 0 20px #a855f7;
+    text-shadow:
+      0 0 5px #a855f7,
+      0 0 10px #a855f7,
+      0 0 20px #a855f7;
   }
 }
 
@@ -71,7 +75,8 @@
 }
 
 @keyframes breath {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

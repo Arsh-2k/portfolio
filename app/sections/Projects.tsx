@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { FaGithub } from 'react-icons/fa';
-import Tilt from 'react-parallax-tilt';
+import { motion } from "framer-motion";
+import { FaGithub } from "react-icons/fa";
+import Tilt from "react-parallax-tilt";
 
 const projects = [
   {
-    title: '🚀 Portfolio Website',
+    title: "🚀 Portfolio Website",
     description:
-      'A modern developer portfolio built with Next.js, Tailwind CSS, and Framer Motion.',
-    github: 'https://github.com/Arsh-2k/portfolio',
-    tech: ['Next.js', 'Tailwind CSS', 'Framer Motion'],
+      "A modern developer portfolio built with Next.js, Tailwind CSS, and Framer Motion.",
+    github: "https://github.com/Arsh-2k/portfolio",
+    tech: ["Next.js", "Tailwind CSS", "Framer Motion"],
   },
   {
-    title: '🏋️ RepVision',
+    title: "🏋️ RepVision",
     description:
-      'A fitness web app with YouTube workout tutorials, clean UI, and interactive features.',
-    github: 'https://github.com/Arsh-2k/RepVision',
-    tech: ['Appwrite', 'React', 'YouTube API'],
+      "A fitness web app with YouTube workout tutorials, clean UI, and interactive features.",
+    github: "https://github.com/Arsh-2k/RepVision",
+    tech: ["Appwrite", "React", "YouTube API"],
   },
 ];
 
@@ -46,8 +46,8 @@ export default function Projects() {
             className="h-[4px] mt-2 mx-auto w-0 rounded-full 
             bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500"
             initial={{ width: 0 }}
-            whileInView={{ width: '100%' }}
-            transition={{ duration: 1, ease: 'easeInOut' }}
+            whileInView={{ width: "100%" }}
+            transition={{ duration: 1, ease: "easeInOut" }}
           />
         </div>
 
@@ -71,7 +71,11 @@ export default function Projects() {
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ type: 'spring', duration: 0.7, delay: index * 0.2 }}
+                transition={{
+                  type: "spring",
+                  duration: 0.7,
+                  delay: index * 0.2,
+                }}
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-200/10 via-transparent to-blue-200/10 dark:from-purple-900/10 dark:to-purple-700/10 rounded-2xl group-hover:blur-sm transition duration-700 pointer-events-none z-0" />
 
@@ -117,7 +121,7 @@ export default function Projects() {
                   className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-300 font-semibold relative z-10 hover:underline"
                   whileHover={{ scale: 1.05, rotate: -1 }}
                   whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
                   <FaGithub /> View on GitHub
                 </motion.a>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { ReactNode, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
@@ -41,7 +41,10 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         </AnimatePresence>
       ) : (
         // SSR fallback to prevent hydration mismatch
-        <main id="main-content" className="flex flex-col min-h-screen w-full overflow-x-hidden">
+        <main
+          id="main-content"
+          className="flex flex-col min-h-screen w-full overflow-x-hidden"
+        >
           {children}
         </main>
       )}

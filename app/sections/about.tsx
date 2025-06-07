@@ -1,34 +1,35 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Typewriter from 'typewriter-effect';
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Typewriter from "typewriter-effect";
+import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 
 const quotes = [
-  '“The magic you’re looking for is in the work you’re avoiding.”',
-  '“In chess, it’s not always about the best move — it’s about making the best of your move.”',
+  "“The magic you’re looking for is in the work you’re avoiding.”",
+  "“In chess, it’s not always about the best move — it’s about making the best of your move.”",
 ];
 
 const details = [
   {
-    icon: '🎓',
-    text: 'CSE undergrad passionate about logic, clean code, and creative builds.',
+    icon: "🎓",
+    text: "CSE undergrad passionate about logic, clean code, and creative builds.",
   },
   {
-    icon: '💻',
-    text: 'Currently diving deep into Programming, DSA, and Web Dev.',
+    icon: "💻",
+    text: "Currently diving deep into Programming, DSA, and Web Dev.",
   },
   {
-    icon: '🛠️',
-    text: 'Focused on turning ideas into real, impactful digital experiences.',
+    icon: "🛠️",
+    text: "Focused on turning ideas into real, impactful digital experiences.",
   },
   {
-    icon: '♟️',
-    text: 'Chess helps me stay sharp and strategic in both life and code.',
+    icon: "♟️",
+    text: "Chess helps me stay sharp and strategic in both life and code.",
   },
   {
-    icon: '🚀',
-    text: 'Aspiring open source contributor and future product builder.',
+    icon: "🚀",
+    text: "Aspiring open source contributor and future product builder.",
   },
 ];
 
@@ -47,12 +48,40 @@ export default function AboutSection() {
     <section
       id="about"
       aria-labelledby="about-heading"
-      className="w-full min-h-screen flex flex-col items-center justify-center
+      className="relative w-full min-h-screen flex flex-col items-center justify-center
                  px-4 sm:px-6 py-20 text-center
                  bg-gradient-to-br from-white via-purple-100 to-blue-100
                  dark:from-gray-900 dark:via-black dark:to-purple-900
                  transition-colors duration-500"
     >
+      {/* 🌐 Social Bar - Fixed and on top */}
+      <div className="fixed left-4 top-1/2 -translate-y-1/2 z-[9999] flex flex-col gap-4 text-2xl">
+        <a
+          href="https://github.com/Arsh-2k"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white transition"
+        >
+          <FaGithub />
+        </a>
+        <a
+          href="https://linkedin.com/in/arshpreet-singh-309726238"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-blue-800 dark:hover:text-blue-400 transition"
+        >
+          <FaLinkedin />
+        </a>
+        <a
+          href="https://twitter.com/@AspiringSDeV"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition"
+        >
+          <FaTwitter />
+        </a>
+      </div>
+
       {/* 🔁 Rotating Quote Box */}
       <div
         className="relative w-full max-w-2xl mb-12 px-4 py-5 sm:px-6 sm:py-6 
@@ -114,7 +143,7 @@ export default function AboutSection() {
             key={i}
             className="flex items-start gap-3"
             whileHover={{ scale: 1.05, x: 6 }}
-            transition={{ type: 'spring', stiffness: 250 }}
+            transition={{ type: "spring", stiffness: 250 }}
           >
             <span className="text-xl sm:text-2xl">{icon}</span>
             <span>{text}</span>

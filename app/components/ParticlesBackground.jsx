@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import Particles from "@tsparticles/react";
@@ -37,26 +37,26 @@ export default function ParticlesBackground() {
           shape: { type: "circle" },
           opacity: {
             value: 0.5,
-            anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+            anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
           },
           size: {
             value: 3,
-            anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+            anim: { enable: true, speed: 2, size_min: 0.1, sync: false },
           },
           move: {
             enable: true,
             speed: 1.5,
-            attract: { enable: true, rotateX: 600, rotateY: 1200 }
+            attract: { enable: true, rotateX: 600, rotateY: 1200 },
           },
           links: {
             enable: true,
             distance: 150,
             color: isDarkMode ? "#00ffff" : "#0000ff",
             opacity: 0.4,
-            width: 1
+            width: 1,
           },
         },
-        detectRetina: true
+        detectRetina: true,
       }}
     />
   );

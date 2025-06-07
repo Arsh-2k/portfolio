@@ -1,28 +1,32 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Lightbulb } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Lightbulb } from "lucide-react";
 
 const ideas = [
   {
-    title: 'AI Workout Tracker',
-    description: 'A computer vision app that counts reps and tracks form using AI.',
-    tags: ['AI', 'Fitness', 'React'],
+    title: "AI Workout Tracker",
+    description:
+      "A computer vision app that counts reps and tracks form using AI.",
+    tags: ["AI", "Fitness", "React"],
   },
   {
-    title: 'Crypto Portfolio Tracker',
-    description: 'Track multiple wallets and get price alerts in a beautiful dashboard.',
-    tags: ['Web3', 'Finance', 'Next.js'],
+    title: "Crypto Portfolio Tracker",
+    description:
+      "Track multiple wallets and get price alerts in a beautiful dashboard.",
+    tags: ["Web3", "Finance", "Next.js"],
   },
   {
-    title: 'Code Snippet Organizer',
-    description: 'Store and search your code snippets with tagging and syntax highlighting.',
-    tags: ['DevTool', 'Tailwind', 'Firebase'],
+    title: "Code Snippet Organizer",
+    description:
+      "Store and search your code snippets with tagging and syntax highlighting.",
+    tags: ["DevTool", "Tailwind", "Firebase"],
   },
   {
-    title: 'Mood Journal',
-    description: 'A mental wellness app with daily prompts, streaks, and stats.',
-    tags: ['Health', 'PWA', 'TypeScript'],
+    title: "Mood Journal",
+    description:
+      "A mental wellness app with daily prompts, streaks, and stats.",
+    tags: ["Health", "PWA", "TypeScript"],
   },
 ];
 
@@ -36,8 +40,10 @@ export default function IdeaVault() {
     >
       {/* 🌟 Shimmer Particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute w-[300%] h-[300%] -left-[100%] -top-[100%] animate-[spin_25s_linear_infinite] 
-        opacity-10 bg-[radial-gradient(#ffffff33_2%,transparent_2.5%)] bg-[size:25px_25px]" />
+        <div
+          className="absolute w-[300%] h-[300%] -left-[100%] -top-[100%] animate-[spin_25s_linear_infinite] 
+        opacity-10 bg-[radial-gradient(#ffffff33_2%,transparent_2.5%)] bg-[size:25px_25px]"
+        />
       </div>
 
       <div className="max-w-6xl w-full relative z-10">
@@ -62,7 +68,8 @@ export default function IdeaVault() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.1 }}
         >
-          A collection of epic project ideas to spark your creativity. Pick one, remix it, and build something legendary!
+          A collection of epic project ideas to spark your creativity. Pick one,
+          remix it, and build something legendary!
         </motion.p>
 
         {/* 🧠 Idea Cards */}

@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { FaTwitter, FaEnvelope, FaGithub, FaLinkedin } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { FaTwitter, FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const contactLinks = [
   {
-    label: 'Twitter',
-    href: 'https://twitter.com/AspiringSDeV7',
+    label: "Twitter",
+    href: "https://twitter.com/AspiringSDeV7",
     icon: <FaTwitter className="text-lg" />,
   },
   {
-    label: 'Email Me',
-    href: 'mailto:your.arshpreet2k6@gmail.com',
+    label: "Email Me",
+    href: "mailto:your.arshpreet2k6@gmail.com",
     icon: <FaEnvelope className="text-lg" />,
   },
   {
-    label: 'GitHub',
-    href: 'https://github.com/Arsh-2k',
+    label: "GitHub",
+    href: "https://github.com/Arsh-2k",
     icon: <FaGithub className="text-lg" />,
   },
   {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/arshpreet-singh-309726238',
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/arshpreet-singh-309726238",
     icon: <FaLinkedin className="text-lg" />,
   },
 ];
@@ -57,7 +57,7 @@ export default function Contact() {
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 1, delay: 0.3 }}
-            style={{ transformOrigin: 'center' }}
+            style={{ transformOrigin: "center" }}
           />
         </motion.div>
 
@@ -74,7 +74,9 @@ export default function Contact() {
           }}
         >
           <label className="flex flex-col gap-1">
-            <span className="text-black dark:text-white font-semibold">Email</span>
+            <span className="text-black dark:text-white font-semibold">
+              Email
+            </span>
             <input
               type="email"
               placeholder="example-email@gmail.com"
@@ -83,7 +85,9 @@ export default function Contact() {
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-black dark:text-white font-semibold">Message</span>
+            <span className="text-black dark:text-white font-semibold">
+              Message
+            </span>
             <textarea
               rows={4}
               placeholder="Hi! I really like your work and want to discuss some things...."
@@ -96,7 +100,11 @@ export default function Contact() {
           </p>
           <motion.button
             type="submit"
-            whileHover={{ scale: 1.07, backgroundColor: "#3B82F6", color: "#fff" }}
+            whileHover={{
+              scale: 1.07,
+              backgroundColor: "#3B82F6",
+              color: "#fff",
+            }}
             whileTap={{ scale: 0.95 }}
             className="mt-2 bg-black text-white px-6 py-2 rounded-md dark:bg-white dark:text-black dark:hover:bg-purple-500 transition-colors shadow-lg"
           >
@@ -121,8 +129,8 @@ export default function Contact() {
               whileHover={{
                 scale: 1.1,
                 rotate: -2,
-                backgroundColor: '#a855f7',
-                color: '#fff',
+                backgroundColor: "#a855f7",
+                color: "#fff",
               }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300 }}
@@ -136,15 +144,15 @@ export default function Contact() {
 
         {/* 🧃 Casual Outro */}
         <p className="mt-6 text-center text-gray-600 dark:text-gray-400">
-          Or just want to have a casual chat? DM me on{' '}
+          Or just want to have a casual chat? DM me on{" "}
           <a
             className="text-black dark:text-white font-semibold underline"
             href="https://twitter.com/AspiringSDeV7"
             target="_blank"
           >
             Twitter
-          </a>{' '}
-          or{' '}
+          </a>{" "}
+          or{" "}
           <a
             className="text-black dark:text-white font-semibold underline"
             href="https://linkedin.com/in/arshpreet-singh-309726238"

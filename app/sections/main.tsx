@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Tilt from 'react-parallax-tilt';
-import ParticlesBackground from '../components/ParticlesBackground';
-import SocialBar from '../components/SocialBar';
-import { useMediaQuery } from 'react-responsive';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import Tilt from "react-parallax-tilt";
+import ParticlesBackground from "../components/ParticlesBackground";
+import SocialBar from "../components/SocialBar";
+import { useMediaQuery } from "react-responsive";
 
 const AvatarWrapper = ({ children }: { children: React.ReactNode }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -48,8 +48,8 @@ export default function MainSection() {
         text-black dark:text-white transition-all duration-500
         ${
           bgSwap
-            ? 'bg-gradient-to-br from-yellow-100 via-white to-blue-100 dark:from-yellow-900 dark:via-black dark:to-indigo-900'
-            : 'bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950'
+            ? "bg-gradient-to-br from-yellow-100 via-white to-blue-100 dark:from-yellow-900 dark:via-black dark:to-indigo-900"
+            : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950"
         }`}
     >
       {isClient && <ParticlesBackground />}
@@ -65,7 +65,7 @@ export default function MainSection() {
           <motion.div
             className={`relative cursor-pointer transition-all duration-300
               rounded-full border-[6px] shadow-xl
-              ${spin ? '' : 'animate-spin-slow'}
+              ${spin ? "" : "animate-spin-slow"}
               border-gradient-gold-silver`}
             onClick={triggerToss}
             onMouseEnter={() => setZap(true)}
@@ -86,7 +86,7 @@ export default function MainSection() {
               }
               transition={{
                 duration: 1.5,
-                ease: 'easeInOut',
+                ease: "easeInOut",
               }}
             />
             {zap && (
@@ -121,7 +121,8 @@ export default function MainSection() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}
       >
-        • Programming - Level 1 • Web Developer - Level 1 • Open Source Contributor - Level 1 • Chess &amp; Coding Enthusiast
+        • Programming - Level 1 • Web Developer - Level 1 • Open Source
+        Contributor - Level 1 • Chess &amp; Coding Enthusiast
       </motion.p>
     </section>
   );

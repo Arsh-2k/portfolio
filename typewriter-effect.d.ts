@@ -1,2 +1,2 @@
 // typewriter-effect.d.ts
-declare module 'typewriter-effect';
+declare module "typewriter-effect";
