@@ -1,19 +1,27 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class", // 🌗 Enables manual dark mode via class
+  darkMode: "class", // 🌙 Enables dark mode using the "dark" class on <html>
+
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}", // ✅ Optional if using `pages/`
+    "./pages/**/*.{js,ts,jsx,tsx}", // Optional if using `/pages`
   ],
+
   theme: {
     extend: {
+      colors: {
+        primary: "#3B82F6", // Tailwind's blue-500
+        dark: "#0f0f0f",     // Deep black for dark themes
+      },
+
       animation: {
         "bounce-slow": "bounceSlow 3s infinite",
         "text-glow": "glow 2s ease-in-out infinite alternate",
         zap: "zap 0.4s ease-in-out",
         spinCoin: "spinCoin 1s ease-in-out forwards",
       },
+
       keyframes: {
         bounceSlow: {
           "0%, 100%": { transform: "translateY(0)" },
@@ -52,11 +60,8 @@ module.exports = {
           },
         },
       },
-      colors: {
-        primary: "#3B82F6", // Tailwind blue-500
-        dark: "#0f0f0f", // Rich black
-      },
     },
   },
+
   plugins: [],
 };

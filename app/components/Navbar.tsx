@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Moon, Sun, Menu, X, Download } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -19,38 +19,39 @@ const navLinks = [
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("#home");
 
-  // Shadow on scroll
+  useEffect(() => setMounted(true), []);
+
+  // Scroll shadow effect
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Active link tracking
+  // Active section detection
   useEffect(() => {
     const sections = document.querySelectorAll("section[id]");
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             setActiveLink(`#${entry.target.id}`);
+            break;
           }
-        });
+        }
       },
-      { threshold: 0.6 }
+      { threshold: 0.4 }
     );
-
     sections.forEach((section) => observer.observe(section));
     return () => sections.forEach((section) => observer.unobserve(section));
   }, []);
 
-  // ESC to close mobile menu
+  // ESC key closes mobile menu
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenuOpen(false);
@@ -59,17 +60,25 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
+    if (!mounted) return;
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
     toast.success(`Switched to ${newTheme === "dark" ? "Dark" : "Light"} Mode`, {
       icon: newTheme === "dark" ? "🌙" : "🌞",
     });
-  };
+  }, [theme, setTheme, mounted]);
 
-  const showResumeToast = () => {
-    toast("Resume download coming soon 👀", { icon: "📄" });
-  };
+  const downloadResume = useCallback(() => {
+    toast("Resume coming soon...", {
+      icon: "⏳",
+      style: {
+        borderRadius: "8px",
+        background: "#fff",
+        color: "#333",
+      },
+    });
+  }, []);
 
   return (
     <nav
@@ -81,29 +90,23 @@ export default function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo */}
+        {/* Brand */}
         <motion.div
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           className="text-3xl font-black text-transparent bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text animate-text-glow"
         >
-          Arshpreet Singh
+          <span className="pb-1 block">Arshpreet Singh</span>
         </motion.div>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-gray-700 dark:text-gray-300 relative">
+        {/* Desktop navigation */}
+        <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-gray-700 dark:text-gray-300">
           {navLinks.map((link) => (
-            <motion.div
-              key={link.href}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="relative"
-            >
+            <motion.div key={link.href} whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href={link.href}
                 className={clsx(
-                  "transition-all duration-300 hover:text-purple-500",
+                  "relative pb-1 transition-all hover:text-purple-500",
                   activeLink === link.href &&
                     "text-purple-600 dark:text-purple-400 underline underline-offset-4"
                 )}
@@ -112,37 +115,41 @@ export default function Navbar() {
                 {activeLink === link.href && (
                   <motion.div
                     layoutId="active-underline"
-                    className="absolute -bottom-1 left-0 w-full h-0.5 bg-purple-500 rounded"
+                    className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-purple-500 rounded"
                   />
                 )}
               </Link>
             </motion.div>
           ))}
 
+          {/* Resume */}
           <motion.button
-            onClick={showResumeToast}
+            onClick={downloadResume}
             whileHover={{ scale: 1.1 }}
             className="flex items-center gap-1 px-4 py-1.5 rounded-full text-purple-700 dark:text-purple-300 border border-purple-400 hover:bg-purple-500 hover:text-white transition-all duration-300"
           >
             <Download size={16} /> Resume
           </motion.button>
 
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full bg-purple-400 dark:bg-purple-600 hover:scale-110 transition-all shadow-md"
-            aria-label="Toggle Theme"
-          >
-            {theme === "dark" ? (
-              <Moon className="text-white w-5 h-5" />
-            ) : (
-              <Sun className="text-yellow-300 w-5 h-5" />
-            )}
-          </button>
+          {/* Theme toggle */}
+          {mounted && (
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full bg-purple-400 dark:bg-purple-600 hover:scale-110 transition-all shadow-md"
+              aria-label="Toggle Theme"
+            >
+              {theme === "dark" ? (
+                <Moon className="text-white w-5 h-5" />
+              ) : (
+                <Sun className="text-yellow-300 w-5 h-5" />
+              )}
+            </button>
+          )}
         </div>
 
-        {/* Mobile Toggle */}
+        {/* Mobile menu toggle */}
         <motion.button
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setMenuOpen((open) => !open)}
           aria-label="Toggle Mobile Menu"
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
@@ -158,7 +165,7 @@ export default function Navbar() {
         </motion.button>
       </div>
 
-      {/* Mobile Overlay Background */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -169,7 +176,6 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
-            {/* Mobile Drawer */}
             <motion.div
               id="mobile-menu"
               role="menu"
@@ -199,7 +205,7 @@ export default function Navbar() {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
-                  showResumeToast();
+                  downloadResume();
                   setMenuOpen(false);
                 }}
                 className="flex items-center gap-1 text-sm font-semibold hover:text-purple-600"
@@ -207,25 +213,27 @@ export default function Navbar() {
                 <Download size={16} /> Resume
               </motion.button>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                  Theme
-                </span>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  onClick={() => {
-                    toggleTheme();
-                    setMenuOpen(false);
-                  }}
-                  className="p-2 rounded-full shadow-md border border-purple-400 bg-purple-400 dark:bg-purple-600"
-                >
-                  {theme === "dark" ? (
-                    <Moon className="text-white w-5 h-5" />
-                  ) : (
-                    <Sun className="text-yellow-300 w-5 h-5" />
-                  )}
-                </motion.button>
-              </div>
+              {mounted && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                    Theme
+                  </span>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    onClick={() => {
+                      toggleTheme();
+                      setMenuOpen(false);
+                    }}
+                    className="p-2 rounded-full shadow-md border border-purple-400 bg-purple-400 dark:bg-purple-600"
+                  >
+                    {theme === "dark" ? (
+                      <Moon className="text-white w-5 h-5" />
+                    ) : (
+                      <Sun className="text-yellow-300 w-5 h-5" />
+                    )}
+                  </motion.button>
+                </div>
+              )}
             </motion.div>
           </>
         )}

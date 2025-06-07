@@ -1,18 +1,28 @@
 "use client";
 
+import { ThemeProvider } from "next-themes";
 import { ReactNode, useEffect, useState } from "react";
 
-export default function ClientLayout({ children }: { children: ReactNode }) {
+export default function ClientWrapper({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
+  // Prevent hydration mismatch
   useEffect(() => {
-    // This ensures the layout only renders after hydration
     setMounted(true);
   }, []);
 
-  if (!mounted) return null; // Avoid mismatch during SSR
+  if (!mounted) return null;
 
   return (
-    <div className="transition-all duration-500 ease-in-out">{children}</div>
+    <ThemeProvider
+      attribute="class"          // Adds `class="dark"` or `class="light"` to <html>
+      defaultTheme="system"     // Respects user's system preference
+      enableSystem={true}       // Enables system-based theme
+      disableTransitionOnChange // Prevents flickering when switching theme
+    >
+      <div className="transition-all duration-500 ease-in-out">
+        {children}
+      </div>
+    </ThemeProvider>
   );
 }
