@@ -62,7 +62,6 @@ const SocialBar = () => {
     }
   }, [isOpen, windowWidth]);
 
-  // 👇 New useEffect to auto-hide toss result
   useEffect(() => {
     if (tossResult) {
       const resultTimeout = setTimeout(() => {
@@ -128,11 +127,7 @@ const SocialBar = () => {
                         ? { opacity: 1, scale: 1, y: -12 }
                         : { opacity: 0, scale: 0.5, y: -6 }
                     }
-                    transition={{
-                      type: "spring",
-                      stiffness: 250,
-                      damping: 12,
-                    }}
+                    transition={{ type: "spring", stiffness: 250, damping: 12 }}
                     className="absolute -top-8 sm:-top-10 text-[10px] sm:text-xs bg-white text-black dark:bg-zinc-900 dark:text-white px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap"
                   >
                     {label}
@@ -140,16 +135,18 @@ const SocialBar = () => {
 
                   <motion.div
                     animate={{
-                      scale: isHovered ? 1.4 : isOtherHovered ? 0.85 : 1,
+                      scale: isHovered
+                        ? windowWidth && windowWidth < 640
+                          ? 1.2
+                          : 1.4
+                        : isOtherHovered
+                        ? 0.85
+                        : 1,
                       rotate: isHovered ? 10 : 0,
                       y: isHovered ? -3 : 0,
                     }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 200,
-                      damping: 16,
-                    }}
-                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#7f00ff] via-[#e100ff] to-[#8e2de2] text-xl neon-glow border border-white/10 shadow-xl hover:shadow-purple-500/50 transition-shadow duration-300"
+                    transition={{ type: "spring", stiffness: 200, damping: 16 }}
+                    className="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#7f00ff] via-[#e100ff] to-[#8e2de2] text-xl neon-glow border border-white/10 shadow-xl hover:shadow-purple-500/50 transition-shadow duration-300"
                   >
                     {icon}
                   </motion.div>
@@ -172,11 +169,7 @@ const SocialBar = () => {
                     ? { opacity: 1, scale: 1, y: -12 }
                     : { opacity: 0, scale: 0.5, y: -6 }
                 }
-                transition={{
-                  type: "spring",
-                  stiffness: 250,
-                  damping: 12,
-                }}
+                transition={{ type: "spring", stiffness: 250, damping: 12 }}
                 className="absolute -top-8 sm:-top-10 text-[10px] sm:text-xs bg-white text-black dark:bg-zinc-900 dark:text-white px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap"
               >
                 Toss a coin!
@@ -186,19 +179,17 @@ const SocialBar = () => {
                 animate={{
                   scale:
                     hoveredIndex === icons.length
-                      ? 1.4
+                      ? windowWidth && windowWidth < 640
+                        ? 1.2
+                        : 1.4
                       : hoveredIndex !== null
                       ? 0.85
                       : 1,
                   rotate: hoveredIndex === icons.length ? 10 : 0,
                   y: hoveredIndex === icons.length ? -3 : 0,
                 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 16,
-                }}
-                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-green-700 via-green-600 to-lime-500 text-xl neon-glow border border-white/10 shadow-xl hover:shadow-green-500/50 transition-shadow duration-300"
+                transition={{ type: "spring", stiffness: 200, damping: 16 }}
+                className="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-green-700 via-green-600 to-lime-500 text-xl neon-glow border border-white/10 shadow-xl hover:shadow-green-500/50 transition-shadow duration-300"
               >
                 <GiCricketBat />
               </motion.div>
