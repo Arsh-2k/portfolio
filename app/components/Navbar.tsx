@@ -1,7 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useState, useMemo, useRef } from "react";
-import { Moon, Sun, Menu, X, Laugh, Briefcase } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from "react";
+import {
+  Moon,
+  Sun,
+  Menu,
+  X,
+  Laugh,
+  Briefcase,
+} from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
@@ -107,17 +120,6 @@ export default function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <motion.button
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-label="Toggle Mobile Menu"
-          className="md:hidden flex items-center gap-2 p-2 rounded-full bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-600 text-white shadow-lg"
-          whileTap={{ scale: 0.9, rotate: 10 }}
-          whileHover={{ scale: 1.1 }}
-        >
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          <span className="text-xs font-bold">Menu</span>
-        </motion.button>
-
         {/* Branding */}
         <div
           className={clsx(
@@ -130,22 +132,66 @@ export default function Navbar() {
           Arshpreet Singh
         </div>
 
-        <div className="w-8 md:hidden">
-          {mounted && (
-            <button
-              onClick={toggleTheme}
-              className="ml-auto p-2 rounded-full bg-violet-600 dark:bg-purple-700 shadow-md"
-            >
-              {theme === "dark" ? (
-                <Moon className="text-white w-5 h-5" />
-              ) : (
-                <Sun className="text-yellow-500 w-5 h-5" />
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={clsx(
+                "font-semibold text-sm transition-all",
+                activeLink === link.href
+                  ? "text-white underline underline-offset-4"
+                  : "text-gray-200 hover:text-white"
               )}
-            </button>
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop Buttons */}
+        <div className="hidden md:flex items-center gap-2">
+          {mounted && (
+            <>
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-full bg-violet-600 dark:bg-purple-700 shadow-md"
+              >
+                {theme === "dark" ? (
+                  <Moon className="text-white w-5 h-5" />
+                ) : (
+                  <Sun className="text-yellow-500 w-5 h-5" />
+                )}
+              </button>
+              <button
+                onClick={toggleMode}
+                className="p-2 rounded-full bg-indigo-500 dark:bg-indigo-800"
+              >
+                {mode === "fun" ? (
+                  <Laugh className="text-white w-5 h-5" />
+                ) : (
+                  <Briefcase className="text-white w-5 h-5" />
+                )}
+              </button>
+            </>
           )}
         </div>
+
+        {/* Mobile Menu Button */}
+        <motion.button
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label="Toggle Mobile Menu"
+          className="md:hidden flex items-center gap-2 p-2 rounded-full bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-600 text-white shadow-lg"
+          whileTap={{ scale: 0.9, rotate: 10 }}
+          whileHover={{ scale: 1.1 }}
+        >
+          {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          <span className="text-xs font-bold">Menu</span>
+        </motion.button>
       </div>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
