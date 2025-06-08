@@ -1,18 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState, useMemo } from "react";
-import { Moon, Sun, Menu, X, Download, Laugh, Briefcase } from "lucide-react";
+import { useCallback, useEffect, useState, useMemo, useRef } from "react";
+import { Moon, Sun, Menu, X, Laugh, Briefcase } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { useTheme } from "next-themes";
-
-const spring = {
-  type: "spring",
-  stiffness: 500,
-  damping: 30,
-};
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -20,34 +14,36 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("#home");
-  const [mode, setMode] = useState<"fun" | "formal">("formal");
+  const [mode, setMode] = useState("formal");
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const navLinks = useMemo(() => [
-    { href: "#home", label: "Home" },
-    { href: "#about", label: "About" },
-    { href: "#projects", label: "Projects" },
-    { href: "#tools-tech", label: "Tools & Tech" },
-    { href: "#contact", label: "Contact" },
-    { href: "#idea-vault", label: "Idea Vault" },
-  ], []);
+  const navLinks = useMemo(
+    () => [
+      { href: "#home", label: "Home" },
+      { href: "#about", label: "About" },
+      { href: "#projects", label: "Projects" },
+      { href: "#tools-tech", label: "Tools & Tech" },
+      { href: "#contact", label: "Contact" },
+      { href: "#idea-vault", label: "Idea Vault" },
+    ],
+    []
+  );
 
-  // Mount flag and fun/formal restore
   useEffect(() => {
     setMounted(true);
     const savedMode = localStorage.getItem("uimode");
-    if (savedMode === "fun" || savedMode === "formal") {
-      setMode(savedMode);
-    }
+    if (savedMode === "fun" || savedMode === "formal") setMode(savedMode);
   }, []);
 
-  // Scroll shadow
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+      setMenuOpen(false);
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Active link tracking
   useEffect(() => {
     const sections = document.querySelectorAll("section[id]");
     const observer = new IntersectionObserver(
@@ -73,6 +69,16 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
+  useEffect(() => {
+    if (menuOpen) {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setMenuOpen(false), 5000);
+    }
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [menuOpen]);
+
   const toggleTheme = useCallback(() => {
     if (!mounted) return;
     const newTheme = theme === "dark" ? "light" : "dark";
@@ -91,79 +97,102 @@ export default function Navbar() {
     });
   };
 
-  const downloadResume = useCallback(() => {
-    toast("Resume coming soon...", {
-      icon: "⏳",
-      style: {
-        borderRadius: "8px",
-        background: "#fff",
-        color: "#333",
-      },
-    });
-  }, []);
-
   return (
     <nav
       className={clsx(
         "fixed top-0 left-0 w-full z-50 transition-all duration-500 backdrop-blur-xl",
-        "bg-gradient-to-r from-purple-100/70 via-white/40 to-purple-100/70",
-        "dark:from-[#1a0024]/80 dark:via-black/30 dark:to-[#1a0024]/80",
+        "bg-gradient-to-r from-violet-500/80 via-purple-700/80 to-indigo-600/80",
+        "dark:from-[#1a0024]/80 dark:via-purple-900/50 dark:to-[#1a0024]/80",
         scrolled && "shadow-md"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <motion.div
+        <motion.button
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label="Toggle Mobile Menu"
+          className="md:hidden flex items-center gap-2 p-2 rounded-full bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-600 text-white shadow-lg"
+          whileTap={{ scale: 0.9, rotate: 10 }}
           whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          transition={spring}
-          className="text-3xl font-black text-transparent bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text animate-text-glow"
         >
-          <span className="pb-1 block">Arshpreet Singh</span>
-        </motion.div>
+          {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          <span className="text-xs font-bold">Menu</span>
+        </motion.button>
 
-        <div className="hidden md:flex items-center space-x-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
-          {navLinks.map((link) => (
-            <motion.div key={link.href} whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.95 }}>
+        {/* Branding */}
+        <div
+          className={clsx(
+            "text-2xl sm:text-3xl font-extrabold animate-text-glow",
+            theme === "light"
+              ? "text-violet-800 drop-shadow-md"
+              : "bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-300 bg-clip-text text-transparent drop-shadow-lg"
+          )}
+        >
+          Arshpreet Singh
+        </div>
+
+        <div className="w-8 md:hidden">
+          {mounted && (
+            <button
+              onClick={toggleTheme}
+              className="ml-auto p-2 rounded-full bg-violet-600 dark:bg-purple-700 shadow-md"
+            >
+              {theme === "dark" ? (
+                <Moon className="text-white w-5 h-5" />
+              ) : (
+                <Sun className="text-yellow-500 w-5 h-5" />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            className={clsx(
+              "md:hidden fixed top-20 left-4 right-4 z-50 p-4 rounded-2xl border shadow-2xl",
+              "bg-white text-gray-800 border-violet-300",
+              "dark:bg-[#1a0024]/90 dark:text-gray-100 dark:border-violet-400/30"
+            )}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+          >
+            {navLinks.map((link) => (
               <Link
+                key={link.href}
                 href={link.href}
-                aria-current={activeLink === link.href ? "page" : undefined}
+                onClick={() => setMenuOpen(false)}
                 className={clsx(
-                  "relative pb-1 transition-all hover:text-purple-500",
-                  activeLink === link.href &&
-                    "text-purple-600 dark:text-purple-400 underline underline-offset-4"
+                  "block py-1 font-semibold",
+                  activeLink === link.href
+                    ? "text-violet-700 dark:text-violet-300 underline"
+                    : "hover:text-violet-500 dark:hover:text-violet-300"
                 )}
               >
                 {link.label}
               </Link>
-            </motion.div>
-          ))}
-
-          <motion.button
-            onClick={downloadResume}
-            whileHover={{ scale: 1.1 }}
-            className="flex items-center gap-1 px-4 py-1.5 rounded-full text-purple-700 dark:text-purple-300 border border-purple-400 hover:bg-purple-500 hover:text-white transition-all duration-300"
-          >
-            <Download size={16} /> Resume
-          </motion.button>
-
-          {mounted && (
-            <>
+            ))}
+            <div className="flex justify-around pt-3">
               <button
-                onClick={toggleTheme}
-                className="p-2 rounded-full bg-purple-400 dark:bg-purple-600 hover:scale-110 transition-all shadow-md"
-                aria-label="Toggle Theme"
+                onClick={() => {
+                  toggleTheme();
+                  setMenuOpen(false);
+                }}
+                className="p-2 rounded-full bg-violet-600 dark:bg-purple-700"
               >
                 {theme === "dark" ? (
                   <Moon className="text-white w-5 h-5" />
                 ) : (
-                  <Sun className="text-yellow-300 w-5 h-5" />
+                  <Sun className="text-yellow-500 w-5 h-5" />
                 )}
               </button>
-
               <button
-                onClick={toggleMode}
-                className="p-2 rounded-full bg-pink-300 dark:bg-pink-600 hover:scale-110 transition-all shadow-md"
-                aria-label="Toggle Fun/Formal Mode"
+                onClick={() => {
+                  toggleMode();
+                  setMenuOpen(false);
+                }}
+                className="p-2 rounded-full bg-indigo-500 dark:bg-indigo-800"
               >
                 {mode === "fun" ? (
                   <Laugh className="text-white w-5 h-5" />
@@ -171,100 +200,8 @@ export default function Navbar() {
                   <Briefcase className="text-white w-5 h-5" />
                 )}
               </button>
-            </>
-          )}
-        </div>
-
-        <motion.button
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-label="Toggle Mobile Menu"
-          aria-expanded={menuOpen}
-          className="md:hidden p-2 rounded-full bg-white/50 dark:bg-black/30 border border-purple-500 shadow-md"
-          whileTap={{ scale: 0.9, rotate: 10 }}
-          whileHover={{ scale: 1.1 }}
-        >
-          {menuOpen ? <X size={24} className="text-purple-600" /> : <Menu size={24} className="text-purple-500" />}
-        </motion.button>
-      </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <>
-            <motion.div
-              className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
-              onClick={() => setMenuOpen(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-            <motion.div
-              id="mobile-menu"
-              role="menu"
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="fixed top-20 left-4 right-4 z-50 p-4 space-y-4 rounded-2xl border border-purple-400/30 bg-gradient-to-br from-white/80 via-white/60 to-purple-100/60 dark:from-black/50 dark:via-[#1a0024]/40 dark:to-[#1a0024]/60 shadow-2xl backdrop-blur-md"
-            >
-              {navLinks.map((link) => (
-                <motion.a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={clsx(
-                    "block text-sm font-semibold hover:text-purple-600",
-                    activeLink === link.href &&
-                      "text-purple-600 dark:text-purple-400 underline underline-offset-4"
-                  )}
-                >
-                  {link.label}
-                </motion.a>
-              ))}
-
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  downloadResume();
-                  setMenuOpen(false);
-                }}
-                className="flex items-center gap-1 text-sm font-semibold hover:text-purple-600"
-              >
-                <Download size={16} /> Resume
-              </motion.button>
-
-              <div className="flex gap-2 pt-2">
-                <button
-                  onClick={() => {
-                    toggleTheme();
-                    setMenuOpen(false);
-                  }}
-                  className="p-2 rounded-full border border-purple-400 bg-purple-400 dark:bg-purple-600"
-                >
-                  {theme === "dark" ? (
-                    <Moon className="text-white w-5 h-5" />
-                  ) : (
-                    <Sun className="text-yellow-300 w-5 h-5" />
-                  )}
-                </button>
-                <button
-                  onClick={() => {
-                    toggleMode();
-                    setMenuOpen(false);
-                  }}
-                  className="p-2 rounded-full bg-pink-300 dark:bg-pink-600"
-                >
-                  {mode === "fun" ? (
-                    <Laugh className="text-white w-5 h-5" />
-                  ) : (
-                    <Briefcase className="text-white w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </motion.div>
-          </>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </nav>

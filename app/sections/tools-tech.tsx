@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { useInView } from "react-intersection-observer";
 
-// Categories with tech names (use correct `Si` names!)
+// Categories with tech names
 const categories = [
   {
     title: "💻 Languages",
@@ -30,14 +30,17 @@ const categories = [
   },
 ];
 
-// ⚡ Dynamic icon loader (correct and safe)
 const loadIcon = (name: string) =>
   dynamic(() =>
     import("react-icons/si").then((mod) => {
       const iconName = `Si${name}`;
-      const Icon = mod[iconName as keyof typeof mod] as React.ComponentType<React.SVGProps<SVGSVGElement>>;
-      return Icon ? Icon : () => <></>;
-    })
+      const Icon = mod[iconName as keyof typeof mod] as React.ComponentType<React.SVGProps<SVGSVGElement>> | undefined;
+      const IconWrapper: React.FC<React.SVGProps<SVGSVGElement>> = (props) =>
+        Icon ? <Icon {...props} /> : <></>;
+      IconWrapper.displayName = `Si${name}Wrapper`;
+      return IconWrapper;
+    }),
+    { ssr: false }
   );
 
 const TechBadge = ({ name, delay = 0 }: { name: string; delay?: number }) => {
@@ -48,8 +51,8 @@ const TechBadge = ({ name, delay = 0 }: { name: string; delay?: number }) => {
     <motion.div
       ref={ref}
       className="group flex flex-col items-center justify-center p-3 rounded-xl 
-        bg-zinc-900/70 hover:scale-105 hover:rotate-[-1deg] 
-        shadow-md hover:shadow-purple-400/40 transition-all"
+      bg-zinc-900/70 hover:scale-105 hover:rotate-[-1deg] 
+      shadow-md hover:shadow-purple-400/40 transition-all"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={inView ? { opacity: 1, scale: 1 } : {}}
       transition={{ duration: 0.4, delay }}
@@ -59,7 +62,7 @@ const TechBadge = ({ name, delay = 0 }: { name: string; delay?: number }) => {
       ) : (
         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/10 rounded-full animate-pulse" />
       )}
-      <p className="text-xs mt-2 text-white">
+      <p className="text-xs mt-2 text-white break-words whitespace-normal text-center">
         {name.replace(/([a-z])([A-Z])/g, "$1 $2")}
       </p>
     </motion.div>
@@ -88,8 +91,8 @@ export default function ToolsTech() {
   return (
     <section
       id="tech"
-      className={`relative w-full min-h-screen pt-20 pb-32 px-6 sm:px-10 md:px-16 
-        bg-gradient-to-br ${themeStyles.gradientBg} text-white scroll-mt-20 overflow-hidden transition-colors`}
+      className={`relative w-full min-h-screen pt-16 pb-24 px-4 sm:px-6 md:px-16 
+      bg-gradient-to-br ${themeStyles.gradientBg} text-white scroll-mt-20 overflow-hidden transition-colors`}
     >
       <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(circle,#ffffff11_1%,transparent_1.2%)] bg-[length:22px_22px] opacity-10" />
       <div
@@ -97,8 +100,9 @@ export default function ToolsTech() {
       />
       <div className="relative z-10 max-w-6xl mx-auto">
         <motion.h1
-          className={`text-center text-4xl sm:text-5xl font-extrabold tracking-tight 
-            bg-gradient-to-r ${themeStyles.titleGradient} bg-clip-text text-transparent mb-6 drop-shadow-md`}
+          className={`text-center text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight 
+          leading-tight bg-gradient-to-r ${themeStyles.titleGradient} bg-clip-text text-transparent 
+          mb-6 drop-shadow-md break-words whitespace-normal`}
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1 }}
@@ -108,7 +112,7 @@ export default function ToolsTech() {
         </motion.h1>
 
         <motion.p
-          className={`text-center max-w-xl mx-auto ${themeStyles.paragraphText} mb-14`}
+          className={`text-center max-w-xl mx-auto ${themeStyles.paragraphText} mb-12 text-sm sm:text-base`}
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -126,7 +130,7 @@ export default function ToolsTech() {
               transition={{ delay: index * 0.15, duration: 0.5, type: "spring" }}
               viewport={{ once: true, amount: 0.3 }}
               className={`border border-purple-500/30 p-6 rounded-xl ${themeStyles.cardBg} backdrop-blur 
-                shadow-lg shadow-purple-900/10 hover:shadow-purple-500/30 transition-shadow`}
+              shadow-lg shadow-purple-900/10 hover:shadow-purple-500/30 transition-shadow`}
             >
               <h2 className={`text-2xl font-bold mb-4 ${themeStyles.headingText}`}>
                 {category.title}

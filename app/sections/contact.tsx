@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { FaTwitter, FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa";
 import { motion, useReducedMotion } from "framer-motion";
+import {
+  FaTwitter,
+  FaEnvelope,
+  FaGithub,
+  FaLinkedin,
+} from "react-icons/fa";
 
 const contactLinks = [
   {
@@ -28,7 +33,7 @@ const contactLinks = [
 ];
 
 export default function Contact() {
-  const reduce = useReducedMotion();
+  const reduceMotion = useReducedMotion();
   const [status, setStatus] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,13 +52,13 @@ export default function Contact() {
                  dark:from-[#1e1b2e] dark:to-[#2a1d43]
                  transition-colors duration-500 scroll-mt-24"
     >
-      {/* 🔮 Optional Aura Layer */}
+      {/* 🔮 Aura Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div
           className={`absolute w-[300%] h-[300%] -left-[100%] -top-[100%]
                       opacity-10 bg-[radial-gradient(#ffffff22_2%,transparent_2.5%)]
                       bg-[size:20px_20px]
-                      ${!reduce ? "animate-[spin_60s_linear_infinite]" : ""}`}
+                      ${!reduceMotion ? "animate-[spin_60s_linear_infinite]" : ""}`}
         />
       </div>
 
@@ -61,21 +66,21 @@ export default function Contact() {
         {/* 🌈 Title */}
         <motion.h2
           className="text-center text-5xl font-extrabold bg-gradient-to-r from-purple-500 via-purple-400 to-indigo-400 bg-clip-text text-transparent mb-10 drop-shadow-lg"
-          initial={reduce ? {} : { opacity: 0, y: 40 }}
-          whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+          initial={reduceMotion ? {} : { opacity: 0, y: 40 }}
+          whileInView={reduceMotion ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
           Let&#39;s Connect
         </motion.h2>
 
-        {/* 📨 Form */}
+        {/* 📨 Contact Form */}
         <motion.form
           onSubmit={handleSubmit}
           aria-label="Contact Form"
           className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 p-8 rounded-2xl shadow-xl flex flex-col gap-6"
-          initial={reduce ? {} : { opacity: 0, y: 30 }}
-          whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+          initial={reduceMotion ? {} : { opacity: 0, y: 30 }}
+          whileInView={reduceMotion ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
           viewport={{ once: true }}
         >
@@ -105,8 +110,8 @@ export default function Contact() {
 
           <motion.button
             type="submit"
-            whileHover={!reduce ? { scale: 1.07, backgroundColor: "#8b5cf6", color: "#fff" } : {}}
-            whileTap={!reduce ? { scale: 0.95 } : {}}
+            whileHover={!reduceMotion ? { scale: 1.07 } : {}}
+            whileTap={!reduceMotion ? { scale: 0.95 } : {}}
             transition={{ type: "spring", stiffness: 300 }}
             className="mt-2 bg-black text-white px-6 py-2 rounded-md dark:bg-white dark:text-black shadow-md transition-all"
           >
@@ -125,11 +130,11 @@ export default function Contact() {
           )}
         </motion.form>
 
-        {/* 🌐 Social Icons */}
+        {/* 🌐 Social Links */}
         <motion.div
           className="mt-10 flex justify-center gap-4 flex-wrap"
-          initial={reduce ? {} : { opacity: 0, y: 30 }}
-          whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+          initial={reduceMotion ? {} : { opacity: 0, y: 30 }}
+          whileInView={reduceMotion ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
           viewport={{ once: true }}
         >
@@ -140,7 +145,7 @@ export default function Contact() {
               target="_blank"
               rel="noopener noreferrer"
               whileHover={
-                reduce
+                reduceMotion
                   ? {}
                   : {
                       scale: 1.1,
@@ -149,7 +154,7 @@ export default function Contact() {
                       boxShadow: "0 0 12px #9333ea",
                     }
               }
-              whileTap={reduce ? {} : { scale: 0.95 }}
+              whileTap={reduceMotion ? {} : { scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300 }}
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 dark:bg-white/10 text-black dark:text-white border border-gray-300 dark:border-zinc-700 transition-all shadow-md backdrop-blur-sm hover:underline hover:decoration-purple-500"
             >
@@ -159,7 +164,7 @@ export default function Contact() {
           ))}
         </motion.div>
 
-        {/* 🗨 Outro */}
+        {/* 💬 Outro Text */}
         <p className="mt-6 text-center text-gray-600 dark:text-gray-400 text-sm">
           Want to casually chat? DM me on{" "}
           <a
