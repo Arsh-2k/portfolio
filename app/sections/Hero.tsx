@@ -1,44 +1,70 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import ParticlesBackground from "../components/ParticlesBackground";
 import SocialBar from "../components/SocialBar";
 import { useMediaQuery } from "react-responsive";
 
+// 💡 Memoized AvatarWrapper
+const AvatarWrapper = memo(({ children }: { children: React.ReactNode }) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  return isMobile ? (
+    <div>{children}</div>
+  ) : (
+    <Tilt glareEnable glareMaxOpacity={0.2} scale={1.1} transitionSpeed={400}>
+      {children}
+    </Tilt>
+  );
+});
+
+AvatarWrapper.displayName = 'AvatarWrapper';
+
 export default function HeroSection() {
   const [zap, setZap] = useState(false);
   const [spin, setSpin] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [bgSwap, setBgSwap] = useState(false);
+  const [avatarMode, setAvatarMode] = useState<"fun" | "formal">("fun");
 
+  // ✅ LocalStorage persistent avatar mode
   useEffect(() => {
+    const stored = localStorage.getItem("avatarMode");
+    if (stored === "formal" || stored === "fun") setAvatarMode(stored as "fun" | "formal");
     setIsClient(true);
   }, []);
 
-  const isMobile = useMediaQuery({ maxWidth: 768 });
-
   const triggerToss = () => {
     if (spin) return;
+
     setZap(true);
     setSpin(true);
     setBgSwap(true);
+
+    // 💥 End animation after dynamic toss
     setTimeout(() => {
       setZap(false);
       setSpin(false);
       setBgSwap(false);
-    }, 1500);
+    }, 1500 + Math.random() * 500); // Adds randomness
   };
 
-  const AvatarWrapper = ({ children }: { children: React.ReactNode }) =>
-    isMobile ? (
-      <div>{children}</div>
-    ) : (
-      <Tilt glareEnable glareMaxOpacity={0.2} scale={1.1} transitionSpeed={400}>
-        {children}
-      </Tilt>
-    );
+  const toggleAvatarMode = () => {
+    const newMode = avatarMode === "fun" ? "formal" : "fun";
+    setAvatarMode(newMode);
+    localStorage.setItem("avatarMode", newMode);
+  };
+
+  // 🎭 Image source logic
+  const currentImage =
+    avatarMode === "fun"
+      ? spin
+        ? "/back-avatar.jpg"
+        : "/avatar.jpg"
+      : spin
+      ? "/back-avatar-formal.jpg"
+      : "/avatar-formal.jpg";
 
   return (
     <section
@@ -52,6 +78,7 @@ export default function HeroSection() {
           : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950"
       }`}
     >
+      {/* ✨ Particle Background */}
       {isClient && <ParticlesBackground />}
 
       {/* 💫 Social Bar */}
@@ -59,34 +86,55 @@ export default function HeroSection() {
         <SocialBar />
       </div>
 
-      {/* 🎯 Coin Toss Avatar */}
+      {/* 🎛 Avatar Mode Toggle */}
+      <button
+        onClick={toggleAvatarMode}
+        className="absolute top-6 right-6 text-xs px-3 py-1 rounded-full z-20
+        bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20
+        border border-gray-400 dark:border-gray-600 text-black dark:text-white
+        transition duration-300"
+      >
+        {avatarMode === "fun" ? "Switch to Formal Mode" : "Switch to Fun Mode"}
+      </button>
+
+      {/* 🌀 Coin Toss Avatar */}
       {isClient && (
         <AvatarWrapper>
-          <motion.div
-            className={`relative cursor-pointer transition-all duration-300 rounded-full border-[6px]
-            ${spin ? "" : "animate-spin-slow"}
-            border-gradient-gold-silver shadow-xl`}
+          <div
+            className="relative cursor-pointer border-[6px] border-gradient-gold-silver shadow-xl rounded-full"
             onClick={triggerToss}
             onMouseEnter={() => setZap(true)}
             onMouseLeave={() => setZap(false)}
+            style={{
+              perspective: 1000,
+            }}
+            aria-label="Click to toss avatar"
           >
             <motion.img
-              src={spin ? "/back-avatar.jpg" : "/avatar.jpg"}
+              src={currentImage}
               alt="Arshpreet Singh Avatar"
               className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 rounded-full pointer-events-none select-none"
               animate={
-                spin ? { y: [-20, -200, 0], rotateY: [0, 360, 720] } : {}
+                spin
+                  ? {
+                      rotateY: [0, 360, 720 + Math.floor(Math.random() * 360)],
+                      y: [-20, -200, 0],
+                    }
+                  : {}
               }
               transition={{ duration: 1.5, ease: "easeInOut" }}
+              style={{
+                transformStyle: "preserve-3d",
+              }}
             />
             {zap && (
               <div className="absolute inset-0 rounded-full ring-4 ring-purple-400 dark:ring-pink-400 animate-ping pointer-events-none" />
             )}
-          </motion.div>
+          </div>
         </AvatarWrapper>
       )}
 
-      {/* ✨ Name Heading */}
+      {/* 🧑‍🚀 Name Heading */}
       <motion.h1
         className="mt-8 text-4xl sm:text-5xl md:text-6xl font-extrabold z-10
         bg-[linear-gradient(90deg,#FFD700,#C0C0C0,#FFD700)]
@@ -101,7 +149,7 @@ export default function HeroSection() {
         Hi, I&apos;m Arshpreet Singh
       </motion.h1>
 
-      {/* 🧠 Subtitle */}
+      {/* 🎯 Subtitle */}
       <motion.p
         className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl z-10
         text-black/80 dark:text-white/90

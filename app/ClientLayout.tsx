@@ -9,12 +9,12 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true); // Ensure framer-motion only runs on client
+    setIsClient(true); // Avoid framer-motion SSR mismatch
   }, []);
 
   return (
     <>
-      {/* ♿ Accessibility: Skip link */}
+      {/* ♿ Skip to main content */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only absolute top-2 left-2 z-50 bg-black text-white px-4 py-2 rounded-lg ring-2 ring-purple-500"
@@ -22,10 +22,10 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         Skip to main content
       </a>
 
-      {/* 🎨 Background gradient layer */}
+      {/* 🎨 Theme-responsive background aura */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-purple-50 via-transparent to-blue-50 dark:from-[#0f0a1b] dark:via-zinc-900 dark:to-purple-950 pointer-events-none" />
 
-      {/* 🧠 Main content with motion transitions */}
+      {/* 🚀 Main content with page transitions */}
       {isClient ? (
         <AnimatePresence mode="wait">
           <motion.main
@@ -40,7 +40,6 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           </motion.main>
         </AnimatePresence>
       ) : (
-        // SSR fallback to prevent hydration mismatch
         <main
           id="main-content"
           className="flex flex-col min-h-screen w-full overflow-x-hidden"
@@ -49,16 +48,16 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         </main>
       )}
 
-      {/* 🔮 Animated glowing orb */}
+      {/* 🔮 Aesthetic glowing orb */}
       <div className="fixed bottom-6 right-6 w-6 h-6 bg-gradient-to-tr from-purple-500 to-fuchsia-500 animate-pulse rounded-full blur-sm pointer-events-none z-20" />
 
-      {/* 🔔 Toast notifications */}
+      {/* 🔔 Toasts with theme-aligned design */}
       <Toaster
         position="top-right"
         toastOptions={{
           style: {
             background: "#1f2937", // zinc-800
-            color: "#f9fafb", // zinc-50
+            color: "#f9fafb",       // zinc-50
             borderRadius: "0.5rem",
           },
           success: {
@@ -70,7 +69,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         }}
       />
 
-      {/* 🧿 SocialBar always-on-top */}
+      {/* 🧿 Fixed SocialBar overlay */}
       <SocialBar />
     </>
   );

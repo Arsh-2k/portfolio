@@ -39,7 +39,6 @@ export default function AboutSection() {
     const interval = setInterval(() => {
       setCurrentQuote((prev) => (prev + 1) % quotes.length);
     }, 14000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -51,13 +50,23 @@ export default function AboutSection() {
                  px-4 sm:px-6 py-20 text-center
                  bg-gradient-to-br from-white via-purple-100 to-blue-100
                  dark:from-gray-900 dark:via-black dark:to-purple-900
-                 transition-colors duration-500"
+                 theme-transition"
     >
+      {/* 🌀 Background Aura Ring */}
+      <motion.div
+        className="absolute z-0 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-blue-400/20 
+                   rounded-full blur-3xl animate-pulse theme-transition"
+        initial={{ scale: 0.5, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
+      />
+
       {/* 🔁 Rotating Quote Box */}
       <div
-        className="relative w-full max-w-2xl mb-12 px-4 py-5 sm:px-6 sm:py-6 
-                   bg-white/70 dark:bg-zinc-900/40 rounded-lg 
-                   text-purple-800 dark:text-purple-300 shadow-2xl"
+        className="relative z-10 w-full max-w-2xl mb-12 px-4 py-5 sm:px-6 sm:py-6 
+                   bg-white/70 dark:bg-zinc-900/50 rounded-lg 
+                   text-purple-800 dark:text-purple-300 
+                   shadow-2xl border border-purple-300/20 dark:border-purple-500/20"
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -83,11 +92,11 @@ export default function AboutSection() {
       {/* ✨ Section Heading */}
       <motion.h2
         id="about-heading"
-        className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-10 
+        className="relative z-10 text-3xl sm:text-4xl md:text-5xl font-extrabold mb-10
                    bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent
                    rounded-xl border-4 border-transparent 
                    hover:border-purple-400/40 dark:hover:border-purple-600/40
-                   hover:shadow-[0_0_15px_#c084fc66] transition-all duration-300"
+                   hover:shadow-[0_0_15px_#c084fc66] theme-transition"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -98,12 +107,12 @@ export default function AboutSection() {
 
       {/* 📜 Personal Highlights */}
       <motion.ul
-        className="w-full max-w-3xl space-y-5 px-4 sm:px-6 py-6
+        className="relative z-10 w-full max-w-3xl space-y-5 px-4 sm:px-6 py-6
                    text-left text-base sm:text-lg md:text-xl
                    text-gray-800 dark:text-white/90 
-                   bg-white/30 dark:bg-black/30 backdrop-blur-sm
+                   bg-white/30 dark:bg-black/30 backdrop-blur-md
                    border border-purple-300/30 dark:border-purple-500/30 
-                   rounded-xl shadow-lg"
+                   rounded-xl shadow-xl"
         initial={{ opacity: 0, y: 60 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -112,12 +121,12 @@ export default function AboutSection() {
         {details.map(({ icon, text }, i) => (
           <motion.li
             key={i}
-            className="flex items-start gap-3"
-            whileHover={{ scale: 1.05, x: 6 }}
+            className="flex items-start gap-3 hover:scale-[1.02] hover:bg-purple-100/20 dark:hover:bg-purple-900/10 p-2 rounded-lg transition-all duration-300"
+            whileHover={{ x: 8 }}
             transition={{ type: "spring", stiffness: 250 }}
           >
             <span className="text-xl sm:text-2xl">{icon}</span>
-            <span>{text}</span>
+            <span className="leading-relaxed">{text}</span>
           </motion.li>
         ))}
       </motion.ul>

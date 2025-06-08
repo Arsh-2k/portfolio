@@ -1,18 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class", // 🌙 Enables dark mode using the "dark" class on <html>
+  darkMode: "class", // 🌙 Enables dark mode via `dark` class on <html>
 
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}", // Optional if using `/pages`
+    "./pages/**/*.{js,ts,jsx,tsx}",
   ],
 
   theme: {
     extend: {
       colors: {
-        primary: "#3B82F6", // Tailwind's blue-500
-        dark: "#0f0f0f",     // Deep black for dark themes
+        primary: "#3B82F6", // Blue-500
+        dark: "#0f0f0f",     // Deep dark theme base
       },
 
       animation: {
@@ -20,6 +20,8 @@ module.exports = {
         "text-glow": "glow 2s ease-in-out infinite alternate",
         zap: "zap 0.4s ease-in-out",
         spinCoin: "spinCoin 1s ease-in-out forwards",
+        "spin-slow": "spin 6s linear infinite",
+        "gradient-shine": "gradient-shine 3s ease-in-out infinite",
       },
 
       keyframes: {
@@ -59,6 +61,14 @@ module.exports = {
             filter: "drop-shadow(0 0 15px silver)",
           },
         },
+        "gradient-shine": {
+          "0%": { backgroundPosition: "0% center" },
+          "100%": { backgroundPosition: "200% center" },
+        },
+      },
+
+      borderImage: {
+        "gold-silver": "linear-gradient(to right, #FFD700, #C0C0C0)",
       },
     },
   },

@@ -57,17 +57,15 @@
   }
 }
 
-/* ---------------- ANIMATIONS ---------------- */
+/* ---------------- ANIMATIONS & UTILITIES ---------------- */
 @layer utilities {
+  /* Keyframes */
   @keyframes zap {
     0%, 100% {
       text-shadow: 0 0 0px transparent;
     }
     50% {
-      text-shadow:
-        0 0 5px #a855f7,
-        0 0 10px #a855f7,
-        0 0 20px #a855f7;
+      text-shadow: 0 0 5px #a855f7, 0 0 10px #a855f7, 0 0 20px #a855f7;
     }
   }
 
@@ -121,6 +119,7 @@
     }
   }
 
+  /* Animation Classes */
   .animate-zap {
     animation: zap 1.4s ease-in-out infinite;
   }
@@ -165,6 +164,7 @@
     animation: gradient-x 6s ease infinite;
   }
 
+  /* Utility Classes */
   .noselect {
     user-select: none;
   }

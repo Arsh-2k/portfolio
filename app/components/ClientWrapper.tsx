@@ -6,7 +6,7 @@ import { ReactNode, useEffect, useState } from "react";
 export default function ClientWrapper({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration mismatch
+  // ⏳ Avoid hydration mismatch: only render after mounting
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -15,11 +15,12 @@ export default function ClientWrapper({ children }: { children: ReactNode }) {
 
   return (
     <ThemeProvider
-      attribute="class"          // Adds `class="dark"` or `class="light"` to <html>
-      defaultTheme="system"     // Respects user's system preference
-      enableSystem={true}       // Enables system-based theme
-      disableTransitionOnChange // Prevents flickering when switching theme
+      attribute="class"          // Uses `class="dark"` or `class="light"` on <html>
+      defaultTheme="system"     // Use system preference by default
+      enableSystem={true}       // Detect system-level dark mode
+      disableTransitionOnChange // Prevents theme flicker during switch
     >
+      {/* 🌈 Smooth transition container */}
       <div className="transition-all duration-500 ease-in-out">
         {children}
       </div>

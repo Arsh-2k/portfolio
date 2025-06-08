@@ -25,103 +25,95 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="w-full min-h-screen flex flex-col justify-center items-center px-6 py-24 
-        bg-gradient-to-br from-white via-gray-100 to-purple-100 
-        dark:from-black dark:via-zinc-900 dark:to-purple-950 
+      aria-labelledby="projects-heading"
+      className="w-full min-h-screen flex flex-col justify-center items-center px-6 md:px-12 py-36
+        bg-gradient-to-br from-violet-200 via-purple-100 to-blue-100
+        dark:from-zinc-900 dark:via-zinc-800 dark:to-black
         text-gray-900 dark:text-white scroll-mt-24"
     >
-      <div className="max-w-6xl w-full space-y-16">
-        {/* Heading Tile */}
-        <Tilt
-          tiltMaxAngleX={8}
-          tiltMaxAngleY={8}
-          glareEnable
-          glareMaxOpacity={0.15}
-          transitionSpeed={1000}
-          scale={1.02}
-          className="rounded-3xl"
-        >
+      <div className="w-full max-w-[1800px] space-y-24">
+
+        {/* Title with tilt and shine */}
+        <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10} glareEnable glareMaxOpacity={0.18} scale={1.02}>
           <motion.div
-            whileHover={{ scale: 1.03 }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-fuchsia-500 via-purple-500 to-blue-500 
-                        p-8 shadow-2xl transition-shadow duration-500"
-            initial={{ opacity: 0, y: -40 }}
+            className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-purple-500 via-violet-600 to-indigo-500 p-12 shadow-[0_20px_80px_rgba(0,0,0,0.25)]"
+            initial={{ opacity: 0, y: -60 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 120, damping: 20 }}
+            transition={{ type: "spring", stiffness: 110, damping: 22 }}
           >
-            <h2 className="text-6xl md:text-8xl font-extrabold text-white text-center z-10 relative">
+            <h2
+              id="projects-heading"
+              className="text-7xl md:text-9xl font-extrabold text-white text-center relative z-10"
+            >
               My Projects
             </h2>
-            {/* shine swipe */}
             <motion.div
-              className="absolute inset-0 pointer-events-none bg-white/20 rounded-3xl"
-              initial={{ x: '-100%', skewX: -15, opacity: 0 }}
-              whileHover={{ x: '200%', skewX: -15, opacity: 1 }}
-              transition={{ duration: 1.2 }}
+              className="absolute inset-0 pointer-events-none bg-white/25 rounded-[2rem]"
+              initial={{ x: "-100%", skewX: -20, opacity: 0 }}
+              whileHover={{ x: "200%", skewX: -20, opacity: 1 }}
+              transition={{ duration: 1.3 }}
             />
           </motion.div>
         </Tilt>
 
-        {/* Project Cards */}
-        <div className="grid gap-16 sm:grid-cols-1 md:grid-cols-2">
+        {/* Projects Grid */}
+        <div className="grid gap-20 grid-cols-1 md:grid-cols-2">
           {projects.map((project, idx) => (
             <Tilt
               key={idx}
-              tiltMaxAngleX={12}
-              tiltMaxAngleY={12}
+              tiltMaxAngleX={10}
+              tiltMaxAngleY={10}
               glareEnable
-              glareMaxOpacity={0.2}
-              transitionSpeed={1200}
+              glareMaxOpacity={0.15}
+              transitionSpeed={1000}
               scale={1.04}
-              className="rounded-3xl"
             >
               <motion.div
-                className="relative overflow-hidden rounded-3xl bg-white/90 dark:bg-black/30 
-                  backdrop-blur-lg border border-purple-300/25 dark:border-purple-800/25 
-                  p-10 shadow-2xl transition-shadow duration-500 group"
+                className="relative overflow-hidden rounded-[2rem] bg-white/90 dark:bg-zinc-900/40 
+                  backdrop-blur-xl border border-purple-400/20 dark:border-purple-900/20 
+                  p-12 shadow-[0_10px_60px_rgba(0,0,0,0.3)] group"
                 initial={{ opacity: 0, y: 80 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{
                   type: "spring",
-                  stiffness: 140,
-                  damping: 24,
+                  stiffness: 120,
+                  damping: 25,
                   delay: idx * 0.3,
                 }}
               >
-                {/* shine swipe */}
                 <motion.div
-                  className="absolute inset-0 pointer-events-none bg-white/20 dark:bg-black/20 rounded-3xl"
-                  initial={{ x: '-100%', skewX: -15, opacity: 0 }}
-                  whileHover={{ x: '200%', skewX: -15, opacity: 1 }}
+                  className="absolute inset-0 pointer-events-none bg-white/15 dark:bg-black/15 rounded-[2rem]"
+                  initial={{ x: "-100%", skewX: -15, opacity: 0 }}
+                  whileHover={{ x: "200%", skewX: -15, opacity: 1 }}
                   transition={{ duration: 1.2 }}
                 />
 
-                <h3 className="text-3xl font-extrabold mb-4 text-purple-700 dark:text-purple-300 relative z-10">
+                <h3 className="text-4xl font-bold mb-6 text-purple-700 dark:text-purple-300 z-10 relative">
                   {project.title}
                 </h3>
 
-                <p className="text-lg text-gray-800 dark:text-gray-200 mb-6 z-10 relative">
+                <p className="text-xl leading-relaxed text-gray-800 dark:text-gray-200 mb-8 z-10 relative">
                   {project.description}
                 </p>
 
                 <motion.div
-                  className="flex flex-wrap gap-3 mb-8 z-10 relative"
+                  className="flex flex-wrap gap-4 mb-10 z-10 relative"
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
                   variants={{
                     hidden: {},
-                    visible: { transition: { staggerChildren: 0.12 } },
+                    visible: { transition: { staggerChildren: 0.1 } },
                   }}
                 >
                   {project.tech.map((tech, i) => (
                     <motion.span
                       key={i}
-                      className="bg-gradient-to-r from-purple-300 to-blue-300 text-purple-900 
-                                 dark:bg-gradient-to-r dark:from-purple-700 dark:to-blue-700 dark:text-purple-200 
-                                 px-4 py-1 rounded-full text-sm font-semibold"
+                      className="bg-gradient-to-br from-purple-200 to-blue-200 text-purple-900 
+                        dark:from-purple-700 dark:to-blue-700 dark:text-purple-100 
+                        px-5 py-1.5 rounded-full text-base font-semibold"
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.5, delay: i * 0.1 }}
@@ -135,8 +127,8 @@ export default function Projects() {
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-300 
-                             font-bold z-10 relative hover:text-purple-800 dark:hover:text-purple-100"
+                  className="inline-flex items-center gap-3 text-purple-700 dark:text-purple-300 
+                    font-bold text-lg z-10 relative hover:text-purple-900 dark:hover:text-purple-100"
                   whileHover={{ scale: 1.1, rotate: -2 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 300 }}

@@ -15,32 +15,38 @@ export default function Home() {
       {/* 🌌 Persistent Navbar */}
       <Navbar />
 
-      {/* 🧭 Main Content Area with Semantic Sections */}
+      {/* 📜 Snap-scrolling Main Content */}
       <main
         id="main-content"
         role="main"
-        className="relative z-10 overflow-x-hidden"
+        className="relative z-10 h-screen snap-y snap-mandatory overflow-y-scroll overflow-x-hidden scroll-smooth"
       >
+        {/* 🏠 Landing Section */}
         <SectionWrapper id="home">
           <MainSection />
         </SectionWrapper>
 
+        {/* 👤 About Me */}
         <SectionWrapper id="about">
           <About />
         </SectionWrapper>
 
+        {/* 💼 Projects */}
         <SectionWrapper id="projects">
           <Projects />
         </SectionWrapper>
 
+        {/* 🛠️ Tools & Tech */}
         <SectionWrapper id="tools-tech">
           <ToolsTech />
         </SectionWrapper>
 
+        {/* 📬 Contact */}
         <SectionWrapper id="contact">
           <Contact />
         </SectionWrapper>
 
+        {/* 💡 Idea Vault */}
         <SectionWrapper id="idea-vault">
           <IdeaVault />
         </SectionWrapper>

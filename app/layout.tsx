@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import SocialBar from "./components/SocialBar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+// ----------- METADATA FOR SEO + OG -----------
 export const metadata: Metadata = {
   title: "Arshpreet Singh Portfolio",
   description: "Created by Arshpreet Singh — Explore my projects, ideas, and more!",
@@ -34,15 +35,19 @@ export const metadata: Metadata = {
   },
 };
 
+// ----------- ROOT LAYOUT COMPONENT -----------
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {/* Smart theme color for browser UI */}
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#0f0a1b" media="(prefers-color-scheme: dark)" />
       </head>
-      <body className="bg-white text-black dark:bg-black dark:text-white transition-colors duration-500 overflow-x-hidden">
+      <body
+        className="bg-white text-black dark:bg-black dark:text-white transition-colors duration-500 overflow-x-hidden"
+      >
         <ClientWrapper>
           {children}
           <Toaster position="top-right" />

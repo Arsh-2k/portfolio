@@ -1,21 +1,18 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { Moon, Sun, Menu, X, Download } from "lucide-react";
+import { useCallback, useEffect, useState, useMemo } from "react";
+import { Moon, Sun, Menu, X, Download, Laugh, Briefcase } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { useTheme } from "next-themes";
 
-const navLinks = [
-  { href: "#home", label: "Home" },
-  { href: "#about", label: "About" },
-  { href: "#projects", label: "Projects" },
-  { href: "#tools-tech", label: "Tools & Tech" },
-  { href: "#contact", label: "Contact" },
-  { href: "#idea-vault", label: "Idea Vault" },
-];
+const spring = {
+  type: "spring",
+  stiffness: 500,
+  damping: 30,
+};
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -23,17 +20,34 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("#home");
+  const [mode, setMode] = useState<"fun" | "formal">("formal");
 
-  useEffect(() => setMounted(true), []);
+  const navLinks = useMemo(() => [
+    { href: "#home", label: "Home" },
+    { href: "#about", label: "About" },
+    { href: "#projects", label: "Projects" },
+    { href: "#tools-tech", label: "Tools & Tech" },
+    { href: "#contact", label: "Contact" },
+    { href: "#idea-vault", label: "Idea Vault" },
+  ], []);
 
-  // Scroll shadow effect
+  // Mount flag and fun/formal restore
+  useEffect(() => {
+    setMounted(true);
+    const savedMode = localStorage.getItem("uimode");
+    if (savedMode === "fun" || savedMode === "formal") {
+      setMode(savedMode);
+    }
+  }, []);
+
+  // Scroll shadow
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Active section detection
+  // Active link tracking
   useEffect(() => {
     const sections = document.querySelectorAll("section[id]");
     const observer = new IntersectionObserver(
@@ -51,7 +65,6 @@ export default function Navbar() {
     return () => sections.forEach((section) => observer.unobserve(section));
   }, []);
 
-  // ESC key closes mobile menu
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenuOpen(false);
@@ -68,6 +81,15 @@ export default function Navbar() {
       icon: newTheme === "dark" ? "🌙" : "🌞",
     });
   }, [theme, setTheme, mounted]);
+
+  const toggleMode = () => {
+    const newMode = mode === "fun" ? "formal" : "fun";
+    setMode(newMode);
+    localStorage.setItem("uimode", newMode);
+    toast(`Switched to ${newMode === "fun" ? "Fun 🎉" : "Formal 💼"} Mode`, {
+      icon: newMode === "fun" ? "🥳" : "🧑‍💼",
+    });
+  };
 
   const downloadResume = useCallback(() => {
     toast("Resume coming soon...", {
@@ -90,21 +112,21 @@ export default function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Brand */}
         <motion.div
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
+          transition={spring}
           className="text-3xl font-black text-transparent bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text animate-text-glow"
         >
           <span className="pb-1 block">Arshpreet Singh</span>
         </motion.div>
 
-        {/* Desktop navigation */}
-        <div className="hidden md:flex items-center space-x-8 text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <div className="hidden md:flex items-center space-x-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
           {navLinks.map((link) => (
             <motion.div key={link.href} whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href={link.href}
+                aria-current={activeLink === link.href ? "page" : undefined}
                 className={clsx(
                   "relative pb-1 transition-all hover:text-purple-500",
                   activeLink === link.href &&
@@ -112,17 +134,10 @@ export default function Navbar() {
                 )}
               >
                 {link.label}
-                {activeLink === link.href && (
-                  <motion.div
-                    layoutId="active-underline"
-                    className="absolute -bottom-0.5 left-0 w-full h-0.5 bg-purple-500 rounded"
-                  />
-                )}
               </Link>
             </motion.div>
           ))}
 
-          {/* Resume */}
           <motion.button
             onClick={downloadResume}
             whileHover={{ scale: 1.1 }}
@@ -131,41 +146,48 @@ export default function Navbar() {
             <Download size={16} /> Resume
           </motion.button>
 
-          {/* Theme toggle */}
           {mounted && (
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full bg-purple-400 dark:bg-purple-600 hover:scale-110 transition-all shadow-md"
-              aria-label="Toggle Theme"
-            >
-              {theme === "dark" ? (
-                <Moon className="text-white w-5 h-5" />
-              ) : (
-                <Sun className="text-yellow-300 w-5 h-5" />
-              )}
-            </button>
+            <>
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-full bg-purple-400 dark:bg-purple-600 hover:scale-110 transition-all shadow-md"
+                aria-label="Toggle Theme"
+              >
+                {theme === "dark" ? (
+                  <Moon className="text-white w-5 h-5" />
+                ) : (
+                  <Sun className="text-yellow-300 w-5 h-5" />
+                )}
+              </button>
+
+              <button
+                onClick={toggleMode}
+                className="p-2 rounded-full bg-pink-300 dark:bg-pink-600 hover:scale-110 transition-all shadow-md"
+                aria-label="Toggle Fun/Formal Mode"
+              >
+                {mode === "fun" ? (
+                  <Laugh className="text-white w-5 h-5" />
+                ) : (
+                  <Briefcase className="text-white w-5 h-5" />
+                )}
+              </button>
+            </>
           )}
         </div>
 
-        {/* Mobile menu toggle */}
         <motion.button
           onClick={() => setMenuOpen((open) => !open)}
           aria-label="Toggle Mobile Menu"
           aria-expanded={menuOpen}
-          aria-controls="mobile-menu"
           className="md:hidden p-2 rounded-full bg-white/50 dark:bg-black/30 border border-purple-500 shadow-md"
           whileTap={{ scale: 0.9, rotate: 10 }}
           whileHover={{ scale: 1.1 }}
         >
-          {menuOpen ? (
-            <X size={24} className="text-purple-600" />
-          ) : (
-            <Menu size={24} className="text-purple-500" />
-          )}
+          {menuOpen ? <X size={24} className="text-purple-600" /> : <Menu size={24} className="text-purple-500" />}
         </motion.button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -213,27 +235,34 @@ export default function Navbar() {
                 <Download size={16} /> Resume
               </motion.button>
 
-              {mounted && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                    Theme
-                  </span>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    onClick={() => {
-                      toggleTheme();
-                      setMenuOpen(false);
-                    }}
-                    className="p-2 rounded-full shadow-md border border-purple-400 bg-purple-400 dark:bg-purple-600"
-                  >
-                    {theme === "dark" ? (
-                      <Moon className="text-white w-5 h-5" />
-                    ) : (
-                      <Sun className="text-yellow-300 w-5 h-5" />
-                    )}
-                  </motion.button>
-                </div>
-              )}
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => {
+                    toggleTheme();
+                    setMenuOpen(false);
+                  }}
+                  className="p-2 rounded-full border border-purple-400 bg-purple-400 dark:bg-purple-600"
+                >
+                  {theme === "dark" ? (
+                    <Moon className="text-white w-5 h-5" />
+                  ) : (
+                    <Sun className="text-yellow-300 w-5 h-5" />
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    toggleMode();
+                    setMenuOpen(false);
+                  }}
+                  className="p-2 rounded-full bg-pink-300 dark:bg-pink-600"
+                >
+                  {mode === "fun" ? (
+                    <Laugh className="text-white w-5 h-5" />
+                  ) : (
+                    <Briefcase className="text-white w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </motion.div>
           </>
         )}
