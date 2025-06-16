@@ -3,21 +3,21 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState, useCallback } from "react";
 import Particles from "@tsparticles/react";
-import { tsParticles } from "@tsparticles/engine";
+// import { Engine } from "@tsparticles/engine"; // Not needed in JS, remove or uncomment if you need Engine for JSDoc or runtime
+import { loadSlim } from "@tsparticles/slim"; // ⬅️ More performant than loadFull
 
 export default function ParticlesBackground() {
-  const { theme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Sync theme dynamically
+  // 🌓 Detect dark mode reliably
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
   }, [resolvedTheme]);
 
+  // ⚡ Efficient engine init using slim build
   const particlesInit = useCallback(async (engine) => {
-    // You can add custom plugins here like:
-    // await loadSlim(engine); or loadFull(engine);
-    await tsParticles.load(engine); // optional
+    await loadSlim(engine);
   }, []);
 
   return (
@@ -25,26 +25,21 @@ export default function ParticlesBackground() {
       id="tsparticles"
       init={particlesInit}
       options={{
-        fullScreen: { enable: true, zIndex: -1 }, // Ensures it's a background layer
+        fullScreen: { enable: true, zIndex: -1 },
         background: {
           color: {
-            value: isDarkMode ? "#0f0a1b" : "#ffffff", // Consistent with your global styles
+            value: isDarkMode ? "#0f0a1b" : "#ffffff",
           },
         },
         particles: {
           number: {
             value: 60,
-            density: {
-              enable: true,
-              area: 800,
-            },
+            density: { enable: true, area: 800 },
           },
           color: {
-            value: isDarkMode ? "#00ffff" : "#7f00ff", // Glowy cyan vs vibrant indigo
+            value: isDarkMode ? "#00ffff" : "#7f00ff",
           },
-          shape: {
-            type: "circle",
-          },
+          shape: { type: "circle" },
           opacity: {
             value: 0.4,
             random: true,
@@ -68,9 +63,7 @@ export default function ParticlesBackground() {
             enable: true,
             speed: 0.8,
             direction: "none",
-            random: false,
-            straight: false,
-            outMode: "out",
+            outModes: { default: "out" },
             attract: {
               enable: true,
               rotateX: 600,
@@ -80,7 +73,7 @@ export default function ParticlesBackground() {
           links: {
             enable: true,
             distance: 140,
-            color: isDarkMode ? "#00ffff" : "#8b5cf6", // Cyan or violet
+            color: isDarkMode ? "#00ffff" : "#8b5cf6",
             opacity: 0.4,
             width: 1,
           },

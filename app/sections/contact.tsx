@@ -52,7 +52,7 @@ export default function Contact() {
                  dark:from-[#1e1b2e] dark:to-[#2a1d43]
                  transition-colors duration-500 scroll-mt-24"
     >
-      {/* 🔮 Aura Background */}
+      {/* 🔮 Animated Aura Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div
           className={`absolute w-[300%] h-[300%] -left-[100%] -top-[100%]
@@ -63,7 +63,7 @@ export default function Contact() {
       </div>
 
       <div className="max-w-2xl w-full z-10">
-        {/* 🌈 Title */}
+        {/* 🌈 Section Heading */}
         <motion.h2
           className="text-center text-5xl font-extrabold bg-gradient-to-r from-purple-500 via-purple-400 to-indigo-400 bg-clip-text text-transparent mb-10 drop-shadow-lg"
           initial={reduceMotion ? {} : { opacity: 0, y: 40 }}
@@ -74,7 +74,7 @@ export default function Contact() {
           Let&#39;s Connect
         </motion.h2>
 
-        {/* 📨 Contact Form */}
+        {/* 📨 Form */}
         <motion.form
           onSubmit={handleSubmit}
           aria-label="Contact Form"
@@ -164,7 +164,7 @@ export default function Contact() {
           ))}
         </motion.div>
 
-        {/* 💬 Outro Text */}
+        {/* 💬 Outro */}
         <p className="mt-6 text-center text-gray-600 dark:text-gray-400 text-sm">
           Want to casually chat? DM me on{" "}
           <a

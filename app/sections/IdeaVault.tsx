@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Lightbulb } from "lucide-react";
 import { useMemo } from "react";
 
-// 💭 Static idea list — feel free to connect it to CMS/API in future
+// 💭 Static list of project ideas
 const ideas = [
   {
     title: "AI Workout Tracker",
@@ -28,7 +28,7 @@ const ideas = [
   },
 ];
 
-// 🌈 Pill component for tags
+// 🌈 Tag Pill Component
 const TagPill = ({ tag }: { tag: string }) => (
   <span
     className="bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 
@@ -39,6 +39,7 @@ const TagPill = ({ tag }: { tag: string }) => (
   </span>
 );
 
+// 🚀 Idea Vault Component
 export default function IdeaVault() {
   const ideaCards = useMemo(
     () =>
@@ -79,7 +80,7 @@ export default function IdeaVault() {
                  dark:from-black dark:via-zinc-900 dark:to-purple-900 
                  transition-colors duration-500"
     >
-      {/* ✨ Animated grid shimmer background */}
+      {/* ✨ Grid shimmer background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div
           className="absolute w-[300%] h-[300%] -left-[100%] -top-[100%] 
@@ -88,8 +89,8 @@ export default function IdeaVault() {
         />
       </div>
 
-      {/* 💡 Header */}
       <div className="max-w-6xl w-full relative z-10">
+        {/* 💡 Header */}
         <motion.h2
           className="text-4xl sm:text-5xl font-black text-center mb-8 
                      bg-gradient-to-r from-pink-500 to-yellow-400 

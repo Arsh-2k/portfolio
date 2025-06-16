@@ -9,27 +9,34 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true); // Avoid framer-motion SSR mismatch
+    setIsClient(true); // Prevents hydration mismatch for motion
   }, []);
 
   return (
     <>
-      {/* ♿ Skip to main content */}
+      {/* ♿ Accessibility Skip Link */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only absolute top-2 left-2 z-50 bg-black text-white px-4 py-2 rounded-lg ring-2 ring-purple-500"
+        className="sr-only focus:not-sr-only absolute top-2 left-2 z-50 
+                   bg-black text-white px-4 py-2 rounded-lg ring-2 ring-purple-500"
       >
         Skip to main content
       </a>
 
-      {/* 🎨 Theme-responsive background aura */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-purple-50 via-transparent to-blue-50 dark:from-[#0f0a1b] dark:via-zinc-900 dark:to-purple-950 pointer-events-none" />
+      {/* 🎨 Theme Aura Background */}
+      <div
+        className="fixed inset-0 -z-10 bg-gradient-to-br 
+                   from-purple-50 via-transparent to-blue-50 
+                   dark:from-[#0f0a1b] dark:via-zinc-900 dark:to-purple-950 
+                   pointer-events-none"
+      />
 
-      {/* 🚀 Main content with page transitions */}
+      {/* 🚀 Animated Page Wrapper */}
       {isClient ? (
         <AnimatePresence mode="wait">
           <motion.main
             id="main-content"
+            key="main"
             className="flex flex-col min-h-screen w-full overflow-x-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -48,28 +55,33 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         </main>
       )}
 
-      {/* 🔮 Aesthetic glowing orb */}
-      <div className="fixed bottom-6 right-6 w-6 h-6 bg-gradient-to-tr from-purple-500 to-fuchsia-500 animate-pulse rounded-full blur-sm pointer-events-none z-20" />
+      {/* 🔮 Aesthetic Glow Orb */}
+      <div
+        className="fixed bottom-6 right-6 w-6 h-6 
+                   bg-gradient-to-tr from-purple-500 to-fuchsia-500 
+                   animate-pulse rounded-full blur-sm 
+                   pointer-events-none z-20"
+      />
 
-      {/* 🔔 Toasts with theme-aligned design */}
+      {/* 🔔 Toast Notifications */}
       <Toaster
         position="top-right"
         toastOptions={{
           style: {
-            background: "#1f2937", // zinc-800
-            color: "#f9fafb",       // zinc-50
+            background: "#1f2937", // dark zinc
+            color: "#f9fafb",
             borderRadius: "0.5rem",
           },
           success: {
             iconTheme: {
-              primary: "#a855f7", // purple-500
+              primary: "#a855f7", // purple
               secondary: "#f9fafb",
             },
           },
         }}
       />
 
-      {/* 🧿 Fixed SocialBar overlay */}
+      {/* 🧿 Sticky Social Media Sidebar */}
       <SocialBar />
     </>
   );

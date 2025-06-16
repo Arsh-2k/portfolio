@@ -1,13 +1,20 @@
 "use client";
 
 import { useState, useEffect, useRef, memo } from "react";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
-import ParticlesBackground from "../components/ParticlesBackground";
-import SocialBar from "../components/SocialBar";
+import Image from "next/image";
 import useIsMobile from "../hooks/useIsMobile";
 
-// Tilt wrapper — desktop gets parallax tilt, mobile gets static container
+const ParticlesBackground = dynamic(() => import("../components/ParticlesBackground"), {
+  ssr: false,
+});
+
+const SocialBar = dynamic(() => import("../components/SocialBar"), {
+  ssr: false,
+});
+
 const AvatarWrapper = memo(({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
   return isMobile ? (
@@ -28,7 +35,6 @@ const AvatarWrapper = memo(({ children }: { children: React.ReactNode }) => {
 });
 AvatarWrapper.displayName = "AvatarWrapper";
 
-// Toss animation for avatar
 const avatarVariants = {
   spin: {
     rotateY: [0, 360],
@@ -50,7 +56,6 @@ export default function MainSection() {
 
   useEffect(() => {
     setIsClient(true);
-
     return () => {
       if (tossTimeoutRef.current) {
         clearTimeout(tossTimeoutRef.current);
@@ -63,7 +68,6 @@ export default function MainSection() {
     setZap(true);
     setSpin(true);
     setBgSwap(true);
-
     tossTimeoutRef.current = setTimeout(() => {
       setZap(false);
       setSpin(false);
@@ -74,24 +78,17 @@ export default function MainSection() {
   return (
     <section
       id="home"
-      className={`relative w-full min-h-screen flex flex-col justify-center items-center
-        px-6 md:px-10 pt-24 pb-32 text-center transition-all duration-500
-        text-black dark:text-white
-        ${
-          bgSwap
-            ? "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-900 dark:via-zinc-950 dark:to-purple-900"
-            : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950"
-        }`}
+      className={`relative w-full min-h-screen flex flex-col justify-center items-center px-6 md:px-10 pt-24 pb-32 text-center transition-all duration-500 text-black dark:text-white ${
+        bgSwap
+          ? "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-900 dark:via-zinc-950 dark:to-purple-900"
+          : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950"
+      }`}
     >
-      {/* Particle background */}
       {isClient && <ParticlesBackground />}
-
-      {/* Social icons (fixed position) */}
       <div className="absolute bottom-6 left-6 z-20">
         <SocialBar />
       </div>
 
-      {/* Avatar (tossable) */}
       {isClient && (
         <AvatarWrapper>
           <motion.div
@@ -101,16 +98,17 @@ export default function MainSection() {
             onMouseEnter={() => setZap(true)}
             onMouseLeave={() => !spin && setZap(false)}
           >
-            <motion.img
-              src="/avatar.jpg"
-              alt="Avatar"
-              loading="lazy"
-              className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 rounded-full pointer-events-none select-none"
-              variants={avatarVariants}
-              animate={spin ? "spin" : "idle"}
-            />
+            <motion.div variants={avatarVariants} animate={spin ? "spin" : "idle"}>
+              <Image
+                src="/avatar.jpg"
+                alt="Avatar"
+                width={256}
+                height={256}
+                priority
+                className="rounded-full pointer-events-none select-none w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64"
+              />
+            </motion.div>
 
-            {/* Zap ring animation */}
             {zap && (
               <motion.div
                 className="absolute inset-0 rounded-full ring-[3px] ring-purple-400 z-10 pointer-events-none"
@@ -120,7 +118,6 @@ export default function MainSection() {
               />
             )}
 
-            {/* Aura effect (infinite pulse) */}
             <motion.div
               className="absolute -inset-1 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 blur-2xl opacity-25 z-0 pointer-events-none"
               animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.3, 0.2] }}
@@ -130,11 +127,8 @@ export default function MainSection() {
         </AvatarWrapper>
       )}
 
-      {/* Title */}
       <motion.h1
-        className="mt-10 text-3xl sm:text-4xl md:text-5xl font-extrabold z-10
-          bg-gradient-to-r from-purple-500 via-indigo-400 to-cyan-500
-          bg-clip-text text-transparent tracking-wide transition duration-300"
+        className="mt-10 text-3xl sm:text-4xl md:text-5xl font-extrabold z-10 bg-gradient-to-r from-purple-500 via-indigo-400 to-cyan-500 bg-clip-text text-transparent tracking-wide transition duration-300"
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
@@ -142,11 +136,8 @@ export default function MainSection() {
         Hi, I&apos;m Arshpreet Singh
       </motion.h1>
 
-      {/* Subtitle */}
       <motion.p
-        className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl z-10
-          text-black/80 dark:text-white/90 hover:text-violet-500 dark:hover:text-violet-400
-          transition duration-300"
+        className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl z-10 text-black/80 dark:text-white/90 hover:text-violet-500 dark:hover:text-violet-400 transition duration-300"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}

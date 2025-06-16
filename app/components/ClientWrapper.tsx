@@ -1,12 +1,16 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
-export default function ClientWrapper({ children }: { children: ReactNode }) {
+interface ClientWrapperProps {
+  children: ReactNode;
+}
+
+export default function ClientWrapper({ children }: ClientWrapperProps) {
   const [mounted, setMounted] = useState(false);
 
-  // ⏳ Avoid hydration mismatch: only render after mounting
+  // Prevent hydration mismatch by rendering only after client mounts
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -15,13 +19,13 @@ export default function ClientWrapper({ children }: { children: ReactNode }) {
 
   return (
     <ThemeProvider
-      attribute="class"          // Uses `class="dark"` or `class="light"` on <html>
-      defaultTheme="system"     // Use system preference by default
-      enableSystem={true}       // Detect system-level dark mode
-      disableTransitionOnChange // Prevents theme flicker during switch
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
     >
-      {/* 🌈 Smooth transition container */}
-      <div className="transition-all duration-500 ease-in-out">
+      {/* Optional: Wrap with smooth transition wrapper */}
+      <div className="transition-colors duration-500 ease-in-out min-h-screen">
         {children}
       </div>
     </ThemeProvider>
