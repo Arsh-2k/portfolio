@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, memo } from "react";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { motion, easeInOut } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import Image from "next/image";
 import useIsMobile from "../hooks/useIsMobile";
@@ -41,7 +41,7 @@ const avatarVariants = {
     y: [0, -100, 0],
     transition: {
       duration: 1.5,
-      ease: "easeInOut",
+      ease: easeInOut,
     },
   },
   idle: {},
