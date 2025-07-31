@@ -85,6 +85,7 @@ export default function MainSection() {
       }`}
     >
       {isClient && <ParticlesBackground />}
+
       <div className="absolute bottom-6 left-6 z-20">
         <SocialBar />
       </div>
@@ -92,26 +93,36 @@ export default function MainSection() {
       {isClient && (
         <AvatarWrapper>
           <motion.div
-            className="relative cursor-pointer rounded-full border-[4px] border-violet-400 shadow-2xl w-fit"
+            className="relative cursor-pointer rounded-full border-4 border-violet-400 shadow-2xl w-fit"
             style={{ transformStyle: "preserve-3d" }}
             onClick={triggerToss}
             onMouseEnter={() => setZap(true)}
             onMouseLeave={() => !spin && setZap(false)}
+            aria-label="User Avatar - click to activate animation"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                triggerToss();
+              }
+            }}
           >
             <motion.div variants={avatarVariants} animate={spin ? "spin" : "idle"}>
               <Image
                 src="/avatar.jpg"
-                alt="Avatar"
+                alt="Avatar of Arshpreet Singh"
                 width={256}
                 height={256}
                 priority
                 className="rounded-full pointer-events-none select-none w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64"
+                draggable={false}
               />
             </motion.div>
 
             {zap && (
               <motion.div
-                className="absolute inset-0 rounded-full ring-[3px] ring-purple-400 z-10 pointer-events-none"
+                className="absolute inset-0 rounded-full ring-3 ring-purple-400 z-10 pointer-events-none"
                 initial={{ opacity: 0.5, scale: 0.9 }}
                 animate={{ opacity: 0, scale: 1.6 }}
                 transition={{ duration: 1 }}

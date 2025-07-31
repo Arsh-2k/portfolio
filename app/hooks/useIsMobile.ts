@@ -9,26 +9,32 @@ import throttle from "lodash.throttle";
  * @returns boolean indicating if the screen is mobile.
  */
 export default function useIsMobile(breakpoint: number = 768): boolean {
-  const [isMobile, setIsMobile] = useState(false);
+  // Initialize state with a safe default in case window is undefined (SSR)
+  const [isMobile, setIsMobile] = useState<boolean>(() =>
+    typeof window !== "undefined" ? window.innerWidth <= breakpoint : false
+  );
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const updateMobileState = () => {
       setIsMobile(window.innerWidth <= breakpoint);
     };
 
-    // Use lodash throttle to limit the rate of updates
+    // Throttle to limit calls to once every 200ms
     const handleResize = throttle(updateMobileState, 200);
 
     // Initial check
     updateMobileState();
 
-    // Listen to resize
     window.addEventListener("resize", handleResize);
 
-    // Cleanup on unmount
+    // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
-      handleResize.cancel(); // Cancel any pending throttled calls
+      handleResize.cancel(); // Cancel any trailing throttled calls
     };
   }, [breakpoint]);
 

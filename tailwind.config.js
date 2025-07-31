@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class", // 🌙 Enables dark mode via `dark` class on <html>
+  darkMode: "class", // Enable dark mode via .dark class
 
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
@@ -11,8 +11,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#3B82F6", // Blue-500
-        dark: "#0f0f0f",     // Deep dark theme base
+        primary: "#3B82F6",  // Blue-500
+        dark: "#0f0f0f",      // Deep dark theme base
       },
 
       animation: {
@@ -66,12 +66,18 @@ module.exports = {
           "100%": { backgroundPosition: "200% center" },
         },
       },
-
-      borderImage: {
-        "gold-silver": "linear-gradient(to right, #FFD700, #C0C0C0)",
-      },
     },
   },
 
-  plugins: [],
+  plugins: [
+    // Custom plugin to add border-image utility for gold to silver gradient
+    function ({ addUtilities }) {
+      addUtilities({
+        ".border-image-gold-silver": {
+          borderImage: "linear-gradient(to right, #FFD700, #C0C0C0) 1",
+          borderStyle: "solid",
+        },
+      });
+    },
+  ],
 };

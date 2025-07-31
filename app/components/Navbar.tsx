@@ -22,14 +22,15 @@ import toast from "react-hot-toast";
 import { useTheme } from "next-themes";
 
 export default function Navbar() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("#home");
-  const [mode, setMode] = useState("formal");
+  const [mode, setMode] = useState<"fun" | "formal">("formal");
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Nav links memoized once
   const navLinks = useMemo(
     () => [
       { href: "#home", label: "Home" },
@@ -42,23 +43,35 @@ export default function Navbar() {
     []
   );
 
+  // Mark mounted after hydration to avoid hydration mismatch on theme
   useEffect(() => {
     setMounted(true);
     const savedMode = localStorage.getItem("uimode");
     if (savedMode === "fun" || savedMode === "formal") setMode(savedMode);
+
+    return () => {
+      // Cleanup timeout on unmount if any
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
+  // Scroll listener: detect scroll position & close menu on scroll
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
       setMenuOpen(false);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Intersection Observer to track active nav link on scroll
   useEffect(() => {
     const sections = document.querySelectorAll("section[id]");
+    if (sections.length === 0) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -70,10 +83,12 @@ export default function Navbar() {
       },
       { threshold: 0.4 }
     );
+
     sections.forEach((section) => observer.observe(section));
     return () => sections.forEach((section) => observer.unobserve(section));
   }, []);
 
+  // Keyboard ESC closes mobile menu
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenuOpen(false);
@@ -82,6 +97,7 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
+  // Auto close mobile menu after 5 seconds of opening
   useEffect(() => {
     if (menuOpen) {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -92,15 +108,18 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
+  // Theme toggle handler
   const toggleTheme = useCallback(() => {
     if (!mounted) return;
-    const newTheme = theme === "dark" ? "light" : "dark";
+    const currentTheme = resolvedTheme || theme;
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
     setTheme(newTheme);
     toast.success(`Switched to ${newTheme === "dark" ? "Dark" : "Light"} Mode`, {
       icon: newTheme === "dark" ? "🌙" : "🌞",
     });
-  }, [theme, setTheme, mounted]);
+  }, [mounted, setTheme, theme, resolvedTheme]);
 
+  // Mode toggle handler
   const toggleMode = () => {
     const newMode = mode === "fun" ? "formal" : "fun";
     setMode(newMode);
@@ -156,7 +175,9 @@ export default function Navbar() {
             <>
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-full bg-violet-600 dark:bg-purple-700 shadow-md"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                className="p-2 rounded-full bg-violet-600 dark:bg-purple-700 shadow-md focus:outline-none focus:ring-2 focus:ring-violet-400"
               >
                 {theme === "dark" ? (
                   <Moon className="text-white w-5 h-5" />
@@ -166,7 +187,9 @@ export default function Navbar() {
               </button>
               <button
                 onClick={toggleMode}
-                className="p-2 rounded-full bg-indigo-500 dark:bg-indigo-800"
+                aria-label={`Switch to ${mode === "fun" ? "formal" : "fun"} mode`}
+                title={`Switch to ${mode === "fun" ? "formal" : "fun"} mode`}
+                className="p-2 rounded-full bg-indigo-500 dark:bg-indigo-800 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
               >
                 {mode === "fun" ? (
                   <Laugh className="text-white w-5 h-5" />
@@ -181,13 +204,15 @@ export default function Navbar() {
         {/* Mobile Menu Button */}
         <motion.button
           onClick={() => setMenuOpen((open) => !open)}
-          aria-label="Toggle Mobile Menu"
-          className="md:hidden flex items-center gap-2 p-2 rounded-full bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-600 text-white shadow-lg"
+          aria-label={menuOpen ? "Close Mobile Menu" : "Open Mobile Menu"}
+          aria-expanded={menuOpen}
+          className="md:hidden flex items-center gap-2 p-2 rounded-full bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-600 text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
           whileTap={{ scale: 0.9, rotate: 10 }}
           whileHover={{ scale: 1.1 }}
+          type="button"
         >
           {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          <span className="text-xs font-bold">Menu</span>
+          <span className="text-xs font-bold select-none">Menu</span>
         </motion.button>
       </div>
 
@@ -195,6 +220,7 @@ export default function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            key="mobile-menu"
             className={clsx(
               "md:hidden fixed top-20 left-4 right-4 z-50 p-4 rounded-2xl border shadow-2xl",
               "bg-white text-gray-800 border-violet-300",
@@ -203,6 +229,7 @@ export default function Navbar() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
           >
             {navLinks.map((link) => (
               <Link
@@ -210,7 +237,7 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
                 className={clsx(
-                  "block py-1 font-semibold",
+                  "block py-1 font-semibold transition-colors",
                   activeLink === link.href
                     ? "text-violet-700 dark:text-violet-300 underline"
                     : "hover:text-violet-500 dark:hover:text-violet-300"
@@ -225,7 +252,8 @@ export default function Navbar() {
                   toggleTheme();
                   setMenuOpen(false);
                 }}
-                className="p-2 rounded-full bg-violet-600 dark:bg-purple-700"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                className="p-2 rounded-full bg-violet-600 dark:bg-purple-700 shadow-md focus:outline-none focus:ring-2 focus:ring-violet-400"
               >
                 {theme === "dark" ? (
                   <Moon className="text-white w-5 h-5" />
@@ -238,7 +266,8 @@ export default function Navbar() {
                   toggleMode();
                   setMenuOpen(false);
                 }}
-                className="p-2 rounded-full bg-indigo-500 dark:bg-indigo-800"
+                aria-label={`Switch to ${mode === "fun" ? "formal" : "fun"} mode`}
+                className="p-2 rounded-full bg-indigo-500 dark:bg-indigo-800 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
               >
                 {mode === "fun" ? (
                   <Laugh className="text-white w-5 h-5" />

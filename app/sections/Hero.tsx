@@ -8,12 +8,10 @@ import ParticlesBackground from "../components/ParticlesBackground";
 import SocialBar from "../components/SocialBar";
 import { useMediaQuery } from "react-responsive";
 
-// 🧠 Memoized Tilt Avatar Container
+// Memoized Tilt Avatar Container with responsive fallback
 const AvatarWrapper = memo(({ children }: { children: React.ReactNode }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  return isMobile ? (
-    <div>{children}</div>
-  ) : (
+  return isMobile ? <div>{children}</div> : (
     <Tilt glareEnable glareMaxOpacity={0.2} scale={1.1} transitionSpeed={400}>
       {children}
     </Tilt>
@@ -28,7 +26,7 @@ export default function HeroSection() {
   const [avatarMode, setAvatarMode] = useState<"fun" | "formal">("fun");
   const [mounted, setMounted] = useState(false);
 
-  // ✅ Persistent avatar mode & prevent hydration mismatch
+  // Hydration safe & persistent avatar mode
   useEffect(() => {
     setMounted(true);
     const stored = localStorage.getItem("avatarMode");
@@ -37,6 +35,7 @@ export default function HeroSection() {
     }
   }, []);
 
+  // Avatar "coin toss" animation trigger
   const triggerToss = () => {
     if (spin) return;
     setZap(true);
@@ -49,12 +48,14 @@ export default function HeroSection() {
     }, 1500 + Math.random() * 500);
   };
 
+  // Toggle between formal and fun avatar modes and persist
   const toggleAvatarMode = () => {
     const newMode = avatarMode === "fun" ? "formal" : "fun";
     setAvatarMode(newMode);
     localStorage.setItem("avatarMode", newMode);
   };
 
+  // Decide current avatar image based on mode and spin state
   const currentImage =
     avatarMode === "fun"
       ? spin
@@ -64,6 +65,7 @@ export default function HeroSection() {
       ? "/back-avatar-formal.jpg"
       : "/avatar-formal.jpg";
 
+  // Background gradient toggled on animation
   const gradientClass = bgSwap
     ? "bg-gradient-to-br from-yellow-100 via-white to-blue-100 dark:from-yellow-900 dark:via-black dark:to-indigo-900"
     : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950";
@@ -72,38 +74,48 @@ export default function HeroSection() {
     <section
       id="home"
       className={`w-full min-h-screen flex flex-col justify-center items-center
-      px-4 sm:px-6 md:px-10 py-24 sm:py-28 text-center text-black dark:text-white
-      transition-all duration-500 overflow-hidden ${gradientClass}`}
+        px-4 sm:px-6 md:px-10 py-24 sm:py-28 text-center text-black dark:text-white
+        transition-all duration-500 overflow-hidden ${gradientClass}`}
     >
-      {/* ✨ Particle Background */}
+      {/* Particle Background */}
       {mounted && <ParticlesBackground />}
 
-      {/* 💫 Social Bar */}
+      {/* Social Bar */}
       <div className="absolute bottom-6 left-6 z-20">
         <SocialBar />
       </div>
 
-      {/* 🎛 Avatar Mode Toggle */}
+      {/* Avatar Mode Toggle */}
       <button
         onClick={toggleAvatarMode}
         className="absolute top-6 right-6 text-xs px-3 py-1 rounded-full z-20
-        bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20
-        border border-gray-400 dark:border-gray-600 text-black dark:text-white
-        transition duration-300"
+          bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20
+          border border-gray-400 dark:border-gray-600 text-black dark:text-white
+          transition duration-300"
+        aria-pressed={avatarMode === "formal"}
+        aria-label="Toggle avatar mode between fun and formal"
       >
         {avatarMode === "fun" ? "Switch to Formal Mode" : "Switch to Fun Mode"}
       </button>
 
-      {/* 🌀 Coin Toss Avatar */}
+      {/* Coin Toss Avatar */}
       {mounted && (
         <AvatarWrapper>
           <div
-            className="relative cursor-pointer border-[6px] border-gradient-gold-silver shadow-xl rounded-full"
+            className="relative cursor-pointer border-6 border-gradient-gold-silver shadow-xl rounded-full"
             onClick={triggerToss}
             onMouseEnter={() => setZap(true)}
-            onMouseLeave={() => setZap(false)}
+            onMouseLeave={() => !spin && setZap(false)}
             style={{ perspective: 1000 }}
-            aria-label="Click to toss avatar"
+            aria-label="Avatar - click or press Enter to trigger animation"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                triggerToss();
+              }
+            }}
           >
             <motion.div
               className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 rounded-full overflow-hidden"
@@ -123,7 +135,7 @@ export default function HeroSection() {
             >
               <Image
                 src={currentImage}
-                alt="Arshpreet Singh Avatar"
+                alt="Avatar of Arshpreet Singh"
                 layout="fill"
                 objectFit="cover"
                 priority
@@ -137,14 +149,14 @@ export default function HeroSection() {
         </AvatarWrapper>
       )}
 
-      {/* 🧑‍🚀 Name Heading */}
+      {/* Name Heading */}
       <motion.h1
         className="mt-8 text-4xl sm:text-5xl md:text-6xl font-extrabold z-10
-        bg-[linear-gradient(90deg,#FFD700,#C0C0C0,#FFD700)]
-        bg-[length:200%_auto] bg-clip-text text-transparent
-        animate-gradient-shine
-        hover:drop-shadow-[0_0_20px_rgba(255,215,0,0.6)]
-        transition duration-300"
+          bg-[linear-gradient(90deg,#FFD700,#C0C0C0,#FFD700)]
+          bg-[length:200%_auto] bg-clip-text text-transparent
+          animate-gradient-shine
+          hover:drop-shadow-[0_0_20px_rgba(255,215,0,0.6)]
+          transition duration-300"
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
@@ -153,19 +165,18 @@ export default function HeroSection() {
         Hi, I&apos;m Arshpreet Singh
       </motion.h1>
 
-      {/* 🎯 Subtitle */}
+      {/* Subtitle */}
       <motion.p
         className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl z-10
-        text-black/80 dark:text-white/90
-        hover:text-purple-600 dark:hover:text-purple-300
-        transition duration-300"
+          text-black/80 dark:text-white/90
+          hover:text-purple-600 dark:hover:text-purple-300
+          transition duration-300"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}
         style={{ willChange: "opacity" }}
       >
-        • Programming - Level 1 • Web Developer - Level 1 • Open Source
-        Contributor - Level 1 • Chess & Coding Enthusiast
+        • Programming - Level 1 • Web Developer - Level 1 • Open Source Contributor - Level 1 • Chess &amp; Coding Enthusiast
       </motion.p>
     </section>
   );
