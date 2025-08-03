@@ -3,20 +3,29 @@
 import { ThemeProvider } from "next-themes";
 import { useEffect, useState, type ReactNode } from "react";
 
+// Simple SSR-safe mobile check
+function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const check = () => setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 interface ClientWrapperProps {
   children: ReactNode;
 }
 
 /**
- * ClientWrapper - Improved for SSR-safe theming, performance, and mobile accessibility
- * - Removes blank flash by relying on ThemeProvider's built-in SSR support.
- * - Handles reduced motion for accessibility.
- * - Uses a cleaner, mobile-first color transition.
+ * ClientWrapper - SSR-safe, mobile-optimized, transition-aware for accessibility.
  */
-
 export default function ClientWrapper({ children }: ClientWrapperProps) {
-  // Detect reduced motion for accessibility
   const [reducedMotion, setReducedMotion] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -24,20 +33,25 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
     }
   }, []);
 
+  // Mobile: remove transition-class and add tight padding if desired
+  // Desktop/Tablet: keep transition, big background
+  // Font smoothing always on for both
+
   return (
     <ThemeProvider
       attribute="class"
       defaultTheme="system"
       enableSystem={true}
       disableTransitionOnChange
-      // Uncomment below if your next-themes has the ssr prop
-      // ssr
+      // ssr  // Uncomment if your next-themes supports it
     >
       <div
-        className={`min-h-screen ${
-          !reducedMotion ? "transition-colors duration-300 ease-in-out" : ""
-        }`}
-        // Optional: for mobile font smoothing & color rendering
+        className={
+          `min-h-screen 
+          ${isMobile ? "px-0 py-0" : ""}
+          ${!reducedMotion && !isMobile ? "transition-colors duration-300 ease-in-out" : ""}
+          `
+        }
         style={{
           WebkitFontSmoothing: "antialiased",
           MozOsxFontSmoothing: "grayscale",

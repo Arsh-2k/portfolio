@@ -3,6 +3,19 @@
 import { motion } from "framer-motion";
 import { FaGithub } from "react-icons/fa";
 import Tilt from "react-parallax-tilt";
+import { useEffect, useState } from "react";
+
+// -------- Responsive mobile hook --------
+function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
 
 // 🌟 Project Data
 const projects = [
@@ -23,6 +36,8 @@ const projects = [
 ];
 
 export default function Projects() {
+  const isMobile = useIsMobile();
+
   return (
     <section
       id="projects"
@@ -53,86 +68,135 @@ export default function Projects() {
         </motion.div>
 
         {/* 📦 Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {projects.map((project, idx) => (
-            <Tilt
-              key={project.github}
-              tiltMaxAngleX={10}
-              tiltMaxAngleY={10}
-              glareEnable
-              glareMaxOpacity={0.15}
-              transitionSpeed={1200}
-              scale={1.02}
-              className="outline-none"
-            >
-              <motion.article
-                className="relative p-6 sm:p-8 rounded-3xl
-                  bg-white/80 dark:bg-zinc-900/60
-                  border border-purple-200 dark:border-zinc-700
-                  shadow-xl overflow-hidden backdrop-blur"
-                initial={{ opacity: 0, y: 60 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.3, type: "spring", stiffness: 120 }}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-12">
+          {projects.map((project, idx) => {
+            // MOBILE: No tilt, simpler shadow/bg/padding/effects
+            if (isMobile) {
+              return (
+                <motion.article
+                  key={project.github}
+                  className="relative p-5 sm:p-6 rounded-2xl
+                    bg-white/95 dark:bg-zinc-900/95 border border-purple-100 dark:border-zinc-800
+                    shadow-md overflow-hidden"
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.22, type: "spring", stiffness: 150 }}
+                >
+                  {/* No shimmer/hover overlay on mobile */}
+                  <h3
+                    className="text-xl sm:text-2xl font-bold mb-3
+                      text-purple-800 dark:text-purple-300 relative z-10"
+                  >
+                    {project.title}
+                  </h3>
+                  <p
+                    className="text-base text-gray-800 dark:text-gray-300 mb-5 relative z-10"
+                  >
+                    {project.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-5 relative z-10">
+                    {project.tech.map((tech, i) => (
+                      <span
+                        key={i}
+                        className="px-2 py-1 text-xs font-medium
+                          bg-purple-100 text-purple-800
+                          dark:bg-purple-800 dark:text-purple-100
+                          rounded-full select-none"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                  <motion.a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1
+                      text-purple-700 dark:text-purple-300
+                      underline font-semibold relative z-10 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded"
+                    aria-label={`View ${project.title} on GitHub`}
+                    // No scale/rotate animate for mobile
+                  >
+                    <FaGithub className="text-lg" />
+                    View on GitHub
+                  </motion.a>
+                </motion.article>
+              );
+            }
+            // DESKTOP/TABLET: 3D tilt, shimmer, blur, bigger, animated links
+            return (
+              <Tilt
+                key={project.github}
+                tiltMaxAngleX={10}
+                tiltMaxAngleY={10}
+                glareEnable
+                glareMaxOpacity={0.15}
+                transitionSpeed={1200}
+                scale={1.02}
+                className="outline-none"
               >
-                {/* ✨ Animated shimmer overlay */}
-                <motion.div
-                  className="absolute inset-0 rounded-3xl
-                    bg-white/10 dark:bg-white/5 pointer-events-none"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: "200%" }}
-                  transition={{ duration: 1.2 }}
-                  aria-hidden="true"
-                />
-
-                {/* 🧱 Project Title */}
-                <h3
-                  className="text-2xl sm:text-3xl font-bold mb-4
-                    text-purple-800 dark:text-purple-300 relative z-10"
+                <motion.article
+                  className="relative p-6 sm:p-8 rounded-3xl
+                    bg-white/80 dark:bg-zinc-900/60
+                    border border-purple-200 dark:border-zinc-700
+                    shadow-xl overflow-hidden backdrop-blur"
+                  initial={{ opacity: 0, y: 60 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.3, type: "spring", stiffness: 120 }}
                 >
-                  {project.title}
-                </h3>
-
-                {/* 📝 Description */}
-                <p
-                  className="text-base text-gray-800 dark:text-gray-300 mb-6 relative z-10"
-                >
-                  {project.description}
-                </p>
-
-                {/* 🧩 Tech Stack */}
-                <div className="flex flex-wrap gap-2 mb-6 relative z-10">
-                  {project.tech.map((tech, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 text-sm font-medium
-                        bg-purple-100 text-purple-800
-                        dark:bg-purple-800 dark:text-purple-100
-                        rounded-full select-none"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* 🔗 GitHub Link */}
-                <motion.a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2
-                    text-purple-700 dark:text-purple-300
-                    hover:underline font-semibold relative z-10 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded"
-                  whileHover={{ scale: 1.05, rotate: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  aria-label={`View ${project.title} on GitHub`}
-                >
-                  <FaGithub className="text-xl" />
-                  View on GitHub
-                </motion.a>
-              </motion.article>
-            </Tilt>
-          ))}
+                  {/* ✨ Animated shimmer overlay */}
+                  <motion.div
+                    className="absolute inset-0 rounded-3xl
+                      bg-white/10 dark:bg-white/5 pointer-events-none"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "200%" }}
+                    transition={{ duration: 1.2 }}
+                    aria-hidden="true"
+                  />
+                  <h3
+                    className="text-2xl sm:text-3xl font-bold mb-4
+                      text-purple-800 dark:text-purple-300 relative z-10"
+                  >
+                    {project.title}
+                  </h3>
+                  <p
+                    className="text-base text-gray-800 dark:text-gray-300 mb-6 relative z-10"
+                  >
+                    {project.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-6 relative z-10">
+                    {project.tech.map((tech, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 text-sm font-medium
+                          bg-purple-100 text-purple-800
+                          dark:bg-purple-800 dark:text-purple-100
+                          rounded-full select-none"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                  <motion.a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2
+                      text-purple-700 dark:text-purple-300
+                      hover:underline font-semibold relative z-10 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded"
+                    whileHover={{ scale: 1.05, rotate: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label={`View ${project.title} on GitHub`}
+                  >
+                    <FaGithub className="text-xl" />
+                    View on GitHub
+                  </motion.a>
+                </motion.article>
+              </Tilt>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,12 +1,31 @@
 "use client";
 
-import { useState, useEffect, useMemo, type ComponentType, type SVGProps } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  type ComponentType,
+  type SVGProps,
+} from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import Tilt from "react-parallax-tilt";
 
-// --- UTIL: Normalize names to react-icons/si exports ---
+// Mobile responsive hook (SSR safe)
+function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const check = () => setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
+// Icon loader
 function normalizeIconName(name: string): string {
   if (/^c\+\+$/i.test(name)) return "Cplusplus";
   if (/^node(\.|d)?js$/i.test(name)) return "Nodedotjs";
@@ -17,19 +36,18 @@ function normalizeIconName(name: string): string {
   const clean = name.replace(/\./g, "").replace(/[^a-zA-Z0-9]/g, "");
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
-
-// --- UTIL: Dynamic import for react-icons/si ---
 function loadIcon(name: string) {
   const iconName = `Si${normalizeIconName(name)}`;
   return dynamic(() =>
     import("react-icons/si").then((mod) => {
       const Icon = (mod as unknown as Record<string, ComponentType<SVGProps<SVGSVGElement>>>)[iconName];
       return Icon ?? (() => null);
-    }), { ssr: false }
+    }),
+    { ssr: false }
   ) as ComponentType<SVGProps<SVGSVGElement>>;
 }
 
-// --- DATA: Tech categories ---
+// DATA
 const categories = [
   { title: "💻 Languages", items: ["C", "Cplusplus", "Python", "Javascript"] },
   { title: "🌐 Frontend", items: ["Html5", "Css3", "Tailwindcss", "React"] },
@@ -38,7 +56,12 @@ const categories = [
   { title: "⚙️ Tools & Platforms", items: ["Git", "Github", "Vercel", "Vscode", "Appwrite", "Figma"] },
 ];
 
-// --- COMPONENT: Sparkle effect ---
+type ThemeStyles = {
+  gradientBg: string;
+  titleGradient: string;
+  paragraphText: string;
+};
+
 const Sparkle = (props: SVGProps<SVGSVGElement>) => (
   <svg width={28} height={28} viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
     <g filter="url(#blurredGlow)">
@@ -52,40 +75,76 @@ const Sparkle = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-type ThemeStyles = {
-  gradientBg: string;
-  titleGradient: string;
-  paragraphText: string;
-};
-
-// --- COMPONENT: Tech Badge ---
-function TechBadge({
-  name,
-  delay = 0,
-  mounted,
-}: {
-  name: string;
-  delay?: number;
-  mounted: boolean;
-}) {
-  const reduceMotion = useReducedMotion();
-  // Hook must run always
+// SINGLE BADGE, NO PARALLAX ON MOBILE
+function TechBadgeMobile({ name, mounted }: { name: string; mounted: boolean }) {
   const Icon = useMemo(() => loadIcon(name), [name]);
-  const IconComponent = Icon;
-
-  if (!mounted) return (
+  return (
     <div
       tabIndex={0}
       role="img"
       aria-label={name}
-      className="group relative rounded-xl p-4 bg-zinc-900/60 shadow-lg select-none min-h-[96px] animate-pulse"
-      style={{ minWidth: 96, minHeight: 96 }}
+      className="flex flex-col items-center justify-center rounded-lg p-2 bg-zinc-900/75 border border-purple-200 dark:border-zinc-800 shadow select-none min-w-[52px] min-h-[62px] mx-1 mb-2"
+      style={{ width: 56 }}
     >
-      <div className="h-10 w-10 rounded bg-purple-100 dark:bg-purple-900/30 mx-auto mb-3" />
-      <div className="h-6 w-16 mx-auto rounded bg-zinc-700/60" />
+      {mounted
+        ? <Icon className="text-2xl text-purple-400 mb-1" />
+        : <div className="w-8 h-8 rounded bg-purple-100 dark:bg-purple-900/40 mb-1 animate-pulse" />
+      }
+      <span className="text-[11px] leading-4 font-semibold text-white/90 text-center truncate max-w-[68px]">{name.replace(/([a-z])([A-Z])/g, "$1 $2")}</span>
     </div>
   );
+}
 
+// MOBILE CARD — all tech in a mini grid, all categories as pills
+function ToolsTechMobile({ mounted }: { mounted: boolean }) {
+  const allTech = categories.flatMap(cat => cat.items);
+  return (
+    <section
+      id="tech"
+      className="min-h-screen w-full flex flex-col px-2 pt-10 pb-2 justify-center items-center bg-gradient-to-br from-white via-violet-50 to-purple-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-purple-950"
+    >
+      <div className="w-[94vw] max-w-xs flex flex-col shadow-2xl rounded-2xl border border-purple-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/90 p-4 items-center">
+        <h1 className="text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent text-center mb-2">
+          🛠️ Tools & Tech
+        </h1>
+        <div className="flex flex-wrap justify-center mb-1">
+          {categories.map(cat => (
+            <span key={cat.title} className="bg-purple-100 dark:bg-purple-800 text-xs font-medium text-purple-700 dark:text-purple-200 px-2 py-0.5 rounded-full mx-0.5 mb-2">
+              {cat.title.replace(/^[^a-zA-Z]+/,'')}
+            </span>
+          ))}
+        </div>
+        <div className="flex flex-wrap w-full justify-center items-center ">
+          {allTech.map(tech => (
+            <TechBadgeMobile key={tech} name={tech} mounted={mounted} />
+          ))}
+        </div>
+      </div>
+      <p className="text-xs text-zinc-500 mt-2 text-center px-2">
+        <span className="font-medium">Stack summary:</span> All categories, all the best tools—ready for real-world builds!
+      </p>
+    </section>
+  );
+}
+
+// --- DESKTOP/TABLET VERSION ---
+function TechBadge({ name, delay = 0, mounted }: { name: string; delay?: number; mounted: boolean }) {
+  const reduceMotion = useReducedMotion();
+  const Icon = useMemo(() => loadIcon(name), [name]);
+  const IconComponent = Icon;
+  if (!mounted)
+    return (
+      <div
+        tabIndex={0}
+        role="img"
+        aria-label={name}
+        className="group relative rounded-xl p-4 bg-zinc-900/60 shadow-lg select-none min-h-[96px] animate-pulse"
+        style={{ minWidth: 96, minHeight: 96 }}
+      >
+        <div className="h-10 w-10 rounded bg-purple-100 dark:bg-purple-900/30 mx-auto mb-3" />
+        <div className="h-6 w-16 mx-auto rounded bg-zinc-700/60" />
+      </div>
+    );
   return (
     <motion.div
       tabIndex={0}
@@ -118,14 +177,7 @@ function TechBadge({
     </motion.div>
   );
 }
-
-// --- COMPONENT: Tech Category ---
-function TechCategory({
-  title,
-  items,
-  index,
-  mounted,
-}: {
+function TechCategory({ title, items, index, mounted }: {
   title: string;
   items: string[];
   index: number;
@@ -200,14 +252,14 @@ export default function ToolsTech() {
     [isDark]
   );
 
+  const isMobile = useIsMobile();
+
+  // SSR skeleton
   if (!mounted) {
-    // SSR skeleton
     return (
       <section
         id="tech"
-        className="relative w-full min-h-screen pt-16 pb-24 px-6 sm:px-10 md:px-16
-                  bg-gradient-to-br from-[#f3e8ff] via-[#e9d5ff] to-[#ede9fe]
-                  text-white scroll-mt-20 overflow-hidden transition-colors"
+        className="relative w-full min-h-screen pt-16 pb-24 px-6 sm:px-10 md:px-16 bg-gradient-to-br from-[#f3e8ff] via-[#e9d5ff] to-[#ede9fe] text-white scroll-mt-20 overflow-hidden transition-colors"
       >
         <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,#a78bfa22_1%,transparent_2%)] bg-[size:25px_25px] animate-[spin_120s_linear_infinite] opacity-10" />
         <div className="relative mx-auto max-w-7xl grid gap-12 grid-cols-1 md:grid-cols-2">
@@ -244,6 +296,10 @@ export default function ToolsTech() {
         </div>
       </section>
     );
+  }
+
+  if (isMobile) {
+    return <ToolsTechMobile mounted={mounted} />;
   }
 
   return (

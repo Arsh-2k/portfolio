@@ -17,11 +17,10 @@ import useIsMobile from "../hooks/useIsMobile";
 const ParticlesBackground = dynamic(() => import("../components/ParticlesBackground"), { ssr: false });
 const SocialBar = dynamic(() => import("../components/SocialBar"), { ssr: false });
 
-// setTimeout ref (number in browser, NodeJS.Timeout in node, both valid for client code)
-type TimeoutRef = number | null;
+type TimeoutRef = ReturnType<typeof setTimeout> | null;
 
 // Haptic feedback for mobile devices
-function triggerHaptic() {
+function triggerHaptic(): void {
   if (typeof window !== "undefined" && "vibrate" in navigator) {
     navigator.vibrate?.(20);
   }
@@ -51,15 +50,15 @@ const AvatarWrapper = memo(({ children }: AvatarWrapperProps) => {
 });
 AvatarWrapper.displayName = "AvatarWrapper";
 
-// Framer motion variants
-const avatarVariants = {
+// Framer motion variants (shorter duration on mobile)
+const getAvatarVariants = (isMobile: boolean) => ({
   spin: {
     rotateY: [0, 360],
-    y: [0, -100, 0],
-    transition: { duration: 1.5, ease: easeInOut },
+    y: [0, isMobile ? -60 : -100, 0],
+    transition: { duration: isMobile ? 0.9 : 1.5, ease: easeInOut },
   },
   idle: {},
-};
+});
 
 export default function MainSection() {
   const [zap, setZap] = useState(false);
@@ -72,30 +71,27 @@ export default function MainSection() {
   const isMobile = useIsMobile();
   const prefersReducedMotion = useReducedMotion();
 
-  // TypeScript: battery API is not standard everywhere, so we extend Navigator type
-  type NavigatorWithBattery = Navigator & {
-    getBattery?: () => Promise<{
-      level: number;
-      charging: boolean;
-      dischargingTime: number;
-    }>;
-  };
-
+  // Battery check: disables particles for mobile & low battery & reduced motion
   useEffect(() => {
     setIsClient(true);
 
-    // Handle battery and reduced motion for particles
-    const batteryHandler = (battery?: { level: number; dischargingTime: number }) => {
+    const batteryHandler = (
+      battery?: { level: number; dischargingTime: number }
+    ) => {
       if (
         isMobile ||
         prefersReducedMotion ||
         (battery && battery.level < 0.15 && battery.dischargingTime !== Infinity)
       ) {
         setShowParticles(false);
+      } else {
+        setShowParticles(true);
       }
     };
     try {
-      const nav = window.navigator as NavigatorWithBattery;
+      const nav = window.navigator as Navigator & {
+        getBattery?: () => Promise<{ level: number; dischargingTime: number }>;
+      };
       if (nav.getBattery) {
         nav.getBattery().then(batteryHandler);
       } else {
@@ -117,28 +113,41 @@ export default function MainSection() {
     setBgSwap(true);
     setCanAnimate(false);
     triggerHaptic();
-    tossTimeoutRef.current = window.setTimeout(() => {
+    tossTimeoutRef.current = setTimeout(() => {
       setZap(false);
       setSpin(false);
       setBgSwap(false);
       setCanAnimate(true);
-    }, 1500);
+    }, isMobile ? 900 : 1500);
   };
+
+  // Avatar variants based on device
+  const avatarVariants = getAvatarVariants(isMobile);
 
   return (
     <section
       id="home"
       className={`relative w-full min-h-screen flex flex-col justify-center items-center px-6 md:px-10 pt-24 pb-32 text-center transition-all duration-500 text-black dark:text-white ${
         bgSwap
-          ? "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-900 dark:via-zinc-950 dark:to-purple-900"
+          ? isMobile
+            ? "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-950 dark:via-zinc-950 dark:to-purple-950"
+            : "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-900 dark:via-zinc-950 dark:to-purple-900"
+          : isMobile
+          ? "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-950 dark:to-purple-950"
           : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950"
       }`}
     >
-      {/* Show animated background only under right conditions */}
+      {/* Show animated background only on desktop/tablet, not mobile */}
       {isClient && showParticles && !prefersReducedMotion && !isMobile && <ParticlesBackground />}
 
-      {/* Social bar with safe positioning */}
-      <div className="absolute bottom-6 left-6 z-20 md:bottom-6 md:left-6 sm:left-2 sm:bottom-2">
+      {/* Social bar with mobile-specific safe positioning */}
+      <div
+        className={`absolute z-20 ${
+          isMobile
+            ? "left-2 bottom-[max(1.1rem,env(safe-area-inset-bottom,1.1rem))]"
+            : "left-6 bottom-6"
+        }`}
+      >
         <SocialBar />
       </div>
 
@@ -146,8 +155,10 @@ export default function MainSection() {
       {isClient && (
         <AvatarWrapper>
           <motion.button
-            className="relative cursor-pointer rounded-full border-4 border-violet-400 shadow-2xl w-fit focus:ring-4 focus:ring-violet-300 transition-none
-             min-w-[56px] min-h-[56px] sm:min-w-[80px] sm:min-h-[80px] md:min-w-[110px] md:min-h-[110px]"
+            className={`relative cursor-pointer rounded-full border-4 border-violet-400 ${
+              isMobile ? "shadow-lg" : "shadow-2xl"
+            } w-fit focus:ring-4 focus:ring-violet-300 transition-none
+            min-w-[56px] min-h-[56px] sm:min-w-[80px] sm:min-h-[80px] md:min-w-[110px] md:min-h-[110px]`}
             style={{
               transformStyle: "preserve-3d",
               outline: "none",
@@ -172,28 +183,36 @@ export default function MainSection() {
             <span id="avatar-action-desc" className="sr-only">
               Click, tap, or press Enter/Space to see animation.
             </span>
-            <motion.div variants={avatarVariants} animate={spin && !prefersReducedMotion ? "spin" : "idle"}>
+            <motion.div
+              variants={avatarVariants}
+              animate={spin && !prefersReducedMotion ? "spin" : "idle"}
+            >
               <Image
                 src="/avatar.jpg"
                 alt="Avatar of Arshpreet Singh"
-                width={256}
-                height={256}
+                width={isMobile ? 120 : 256}
+                height={isMobile ? 120 : 256}
                 priority
-                quality={isMobile ? 60 : 90}
+                quality={isMobile ? 50 : 90}
                 sizes="(max-width: 640px) 120px, (max-width: 768px) 176px, 256px"
-                className="rounded-full pointer-events-none select-none w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64"
+                className={`rounded-full pointer-events-none select-none ${
+                  isMobile
+                    ? "w-28 h-28"
+                    : "w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64"
+                }`}
                 draggable={false}
               />
             </motion.div>
             {zap && !prefersReducedMotion && (
               <motion.div
-                className="absolute inset-0 rounded-full ring-3 ring-purple-400 z-10 pointer-events-none"
-                initial={{ opacity: 0.5, scale: 0.9 }}
-                animate={{ opacity: 0, scale: 1.6 }}
-                transition={{ duration: 1 }}
+                className="absolute inset-0 rounded-full ring-2 ring-purple-300 z-10 pointer-events-none"
+                initial={{ opacity: 0.4, scale: 0.95 }}
+                animate={{ opacity: 0, scale: 1.5 }}
+                transition={{ duration: isMobile ? 0.7 : 1 }}
               />
             )}
-            {!prefersReducedMotion && (
+            {/* Avoid heavy pulses on mobile */}
+            {!prefersReducedMotion && !isMobile && (
               <motion.div
                 className="absolute -inset-1 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 blur-2xl opacity-25 z-0 pointer-events-none"
                 animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.3, 0.2] }}

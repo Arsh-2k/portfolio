@@ -12,18 +12,17 @@ import React, {
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import Image from "next/image";
-import ParticlesBackground from "../components/ParticlesBackground";
 import SocialBar from "../components/SocialBar";
 import { useMediaQuery } from "react-responsive";
 
-// ------- Haptic Feedback for Mobile --------
+// --- Haptic Feedback (unchanged) ---
 function triggerHaptic(): void {
   if (typeof window !== "undefined" && navigator.vibrate) {
     navigator.vibrate(18);
   }
 }
 
-// ------- Avatar Wrapper with Props Typing -------
+// --- Avatar Wrapper ---
 interface AvatarWrapperProps {
   children: ReactNode;
 }
@@ -45,7 +44,7 @@ const AvatarWrapper = memo(function AvatarWrapper({ children }: AvatarWrapperPro
 });
 AvatarWrapper.displayName = "AvatarWrapper";
 
-// ------- Main Component -------
+// --- Main HeroSection ---
 export default function HeroSection() {
   const [zap, setZap] = useState(false);
   const [spin, setSpin] = useState(false);
@@ -56,20 +55,16 @@ export default function HeroSection() {
   const tossTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [showParticles, setShowParticles] = useState(true);
+  const [showParticles, setShowParticles] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  // Hydration-safe: only set state after mount, and check reduced motion
+  // Only set state after mount & check reduced motion
   useEffect(() => {
     setMounted(true);
-
     try {
       const stored = window?.localStorage?.getItem?.("avatarMode");
-      if (stored === "formal" || stored === "fun") {
-        setAvatarMode(stored as "fun" | "formal");
-      }
+      if (stored === "formal" || stored === "fun") setAvatarMode(stored as "fun" | "formal");
     } catch {}
-
     if (typeof window !== "undefined" && window?.matchMedia) {
       setPrefersReducedMotion(
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -79,9 +74,8 @@ export default function HeroSection() {
 
   useEffect(() => {
     if (!mounted) return;
-    if (isMobile || prefersReducedMotion) {
-      setShowParticles(false);
-    }
+    // Only show particles if not mobile and not reduced motion
+    setShowParticles(!isMobile && !prefersReducedMotion);
   }, [isMobile, prefersReducedMotion, mounted]);
 
   useEffect(() => {
@@ -90,7 +84,6 @@ export default function HeroSection() {
     };
   }, []);
 
-  // Animation handler
   const triggerToss = () => {
     if (spin || !canSpin) return;
     setZap(true);
@@ -106,7 +99,6 @@ export default function HeroSection() {
     }, prefersReducedMotion ? 600 : 1500 + Math.random() * 500);
   };
 
-  // Toggle avatar mode and persist
   const toggleAvatarMode = () => {
     const newMode: "fun" | "formal" = avatarMode === "fun" ? "formal" : "fun";
     setAvatarMode(newMode);
@@ -145,12 +137,17 @@ export default function HeroSection() {
           : undefined,
       }}
     >
-      {/* Particle Background (desktop only, respects reduced motion) */}
-      {mounted && showParticles && !isMobile && !prefersReducedMotion && (
-        <ParticlesBackground />
-      )}
+      {/* Particle Background: desktop only, disables on mobile/reduced motion  */}
+      {mounted && showParticles && (() => {
+        // Lazy-load only if needed to avoid impact on mobile bundles 
+        const LazyParticles = React.lazy(() => import("../components/ParticlesBackground"));
+        return (
+          <React.Suspense fallback={null}>
+            <LazyParticles />
+          </React.Suspense>
+        );
+      })()}
 
-      {/* Social Bar with safe-area avoidance */}
       <div
         className="absolute left-6 z-20"
         style={{
@@ -233,8 +230,8 @@ export default function HeroSection() {
                 src={currentImage}
                 alt="Avatar of Arshpreet Singh"
                 fill
-                sizes="(max-width:640px) 160px, (max-width:1024px) 208px, 256px"
-                quality={isMobile ? 60 : 90}
+                sizes="(max-width:450px) 120px, (max-width:768px) 160px, (max-width:1024px) 208px, 256px"
+                quality={isMobile ? 50 : 90}
                 priority
                 draggable={false}
                 title="Avatar of Arshpreet Singh"
@@ -257,7 +254,6 @@ export default function HeroSection() {
         </AvatarWrapper>
       )}
 
-      {/* Name Heading */}
       <motion.h1
         className="mt-8 text-4xl sm:text-5xl md:text-6xl font-extrabold z-10
           bg-[linear-gradient(90deg,#FFD700,#C0C0C0,#FFD700)]
@@ -273,7 +269,6 @@ export default function HeroSection() {
         Hi, I&apos;m Arshpreet Singh
       </motion.h1>
 
-      {/* Subtitle */}
       <motion.p
         className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl z-10
           text-black/80 dark:text-white/90
