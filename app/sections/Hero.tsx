@@ -1,6 +1,14 @@
+/* eslint-disable jsx-a11y/role-supports-aria-props */
 "use client";
 
-import { useState, useEffect, memo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  memo,
+  ReactNode,
+  KeyboardEvent,
+} from "react";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import Image from "next/image";
@@ -8,54 +16,105 @@ import ParticlesBackground from "../components/ParticlesBackground";
 import SocialBar from "../components/SocialBar";
 import { useMediaQuery } from "react-responsive";
 
-// Memoized Tilt Avatar Container with responsive fallback
-const AvatarWrapper = memo(({ children }: { children: React.ReactNode }) => {
+// ------- Haptic Feedback for Mobile --------
+function triggerHaptic(): void {
+  if (typeof window !== "undefined" && navigator.vibrate) {
+    navigator.vibrate(18);
+  }
+}
+
+// ------- Avatar Wrapper with Props Typing -------
+interface AvatarWrapperProps {
+  children: ReactNode;
+}
+const AvatarWrapper = memo(function AvatarWrapper({ children }: AvatarWrapperProps) {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  return isMobile ? <div>{children}</div> : (
-    <Tilt glareEnable glareMaxOpacity={0.2} scale={1.1} transitionSpeed={400}>
+  return isMobile ? (
+    <div className="perspective-1000">{children}</div>
+  ) : (
+    <Tilt
+      glareEnable
+      glareMaxOpacity={0.2}
+      scale={1.1}
+      transitionSpeed={400}
+      className="perspective-1000"
+    >
       {children}
     </Tilt>
   );
 });
 AvatarWrapper.displayName = "AvatarWrapper";
 
+// ------- Main Component -------
 export default function HeroSection() {
   const [zap, setZap] = useState(false);
   const [spin, setSpin] = useState(false);
   const [bgSwap, setBgSwap] = useState(false);
   const [avatarMode, setAvatarMode] = useState<"fun" | "formal">("fun");
   const [mounted, setMounted] = useState(false);
+  const [canSpin, setCanSpin] = useState(true);
+  const tossTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Hydration safe & persistent avatar mode
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const [showParticles, setShowParticles] = useState(true);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  // Hydration-safe: only set state after mount, and check reduced motion
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem("avatarMode");
-    if (stored === "formal" || stored === "fun") {
-      setAvatarMode(stored as "fun" | "formal");
+
+    try {
+      const stored = window?.localStorage?.getItem?.("avatarMode");
+      if (stored === "formal" || stored === "fun") {
+        setAvatarMode(stored as "fun" | "formal");
+      }
+    } catch {}
+
+    if (typeof window !== "undefined" && window?.matchMedia) {
+      setPrefersReducedMotion(
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      );
     }
   }, []);
 
-  // Avatar "coin toss" animation trigger
+  useEffect(() => {
+    if (!mounted) return;
+    if (isMobile || prefersReducedMotion) {
+      setShowParticles(false);
+    }
+  }, [isMobile, prefersReducedMotion, mounted]);
+
+  useEffect(() => {
+    return () => {
+      if (tossTimeoutRef.current) clearTimeout(tossTimeoutRef.current);
+    };
+  }, []);
+
+  // Animation handler
   const triggerToss = () => {
-    if (spin) return;
+    if (spin || !canSpin) return;
     setZap(true);
     setSpin(true);
     setBgSwap(true);
-    setTimeout(() => {
+    setCanSpin(false);
+    triggerHaptic();
+    tossTimeoutRef.current = setTimeout(() => {
       setZap(false);
       setSpin(false);
       setBgSwap(false);
-    }, 1500 + Math.random() * 500);
+      setCanSpin(true);
+    }, prefersReducedMotion ? 600 : 1500 + Math.random() * 500);
   };
 
-  // Toggle between formal and fun avatar modes and persist
+  // Toggle avatar mode and persist
   const toggleAvatarMode = () => {
-    const newMode = avatarMode === "fun" ? "formal" : "fun";
+    const newMode: "fun" | "formal" = avatarMode === "fun" ? "formal" : "fun";
     setAvatarMode(newMode);
-    localStorage.setItem("avatarMode", newMode);
+    try {
+      window?.localStorage?.setItem?.("avatarMode", newMode);
+    } catch {}
   };
 
-  // Decide current avatar image based on mode and spin state
   const currentImage =
     avatarMode === "fun"
       ? spin
@@ -65,7 +124,11 @@ export default function HeroSection() {
       ? "/back-avatar-formal.jpg"
       : "/avatar-formal.jpg";
 
-  // Background gradient toggled on animation
+  const modeIcon = avatarMode === "fun" ? "👔" : "😄";
+  const modeLabel = avatarMode === "fun"
+    ? "Switch to Formal Mode"
+    : "Switch to Fun Mode";
+
   const gradientClass = bgSwap
     ? "bg-gradient-to-br from-yellow-100 via-white to-blue-100 dark:from-yellow-900 dark:via-black dark:to-indigo-900"
     : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950";
@@ -76,58 +139,91 @@ export default function HeroSection() {
       className={`w-full min-h-screen flex flex-col justify-center items-center
         px-4 sm:px-6 md:px-10 py-24 sm:py-28 text-center text-black dark:text-white
         transition-all duration-500 overflow-hidden ${gradientClass}`}
+      style={{
+        paddingBottom: isMobile
+          ? "env(safe-area-inset-bottom, 24px)"
+          : undefined,
+      }}
     >
-      {/* Particle Background */}
-      {mounted && <ParticlesBackground />}
+      {/* Particle Background (desktop only, respects reduced motion) */}
+      {mounted && showParticles && !isMobile && !prefersReducedMotion && (
+        <ParticlesBackground />
+      )}
 
-      {/* Social Bar */}
-      <div className="absolute bottom-6 left-6 z-20">
+      {/* Social Bar with safe-area avoidance */}
+      <div
+        className="absolute left-6 z-20"
+        style={{
+          bottom: isMobile
+            ? "max(1.5rem, env(safe-area-inset-bottom, 1.5rem))"
+            : "1.5rem",
+        }}
+      >
         <SocialBar />
       </div>
 
       {/* Avatar Mode Toggle */}
       <button
         onClick={toggleAvatarMode}
-        className="absolute top-6 right-6 text-xs px-3 py-1 rounded-full z-20
+        type="button"
+        className="absolute top-6 right-6 flex items-center gap-2 text-xs sm:text-sm px-3 py-1 rounded-full z-20
           bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20
           border border-gray-400 dark:border-gray-600 text-black dark:text-white
-          transition duration-300"
+          transition duration-300 shadow backdrop-blur"
         aria-pressed={avatarMode === "formal"}
-        aria-label="Toggle avatar mode between fun and formal"
+        aria-label={modeLabel}
+        role="switch"
+        aria-checked={avatarMode === "formal"}
+        tabIndex={0}
       >
-        {avatarMode === "fun" ? "Switch to Formal Mode" : "Switch to Fun Mode"}
+        <span aria-hidden="true" className="text-lg">{modeIcon}</span>
+        {modeLabel}
       </button>
 
       {/* Coin Toss Avatar */}
       {mounted && (
         <AvatarWrapper>
-          <div
-            className="relative cursor-pointer border-6 border-gradient-gold-silver shadow-xl rounded-full"
+          <motion.button
+            type="button"
+            className="relative cursor-pointer border-6 border-gradient-gold-silver shadow-xl rounded-full outline-none
+            focus-visible:ring-4 focus-visible:ring-purple-400 min-w-[120px] min-h-[120px] w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64"
             onClick={triggerToss}
-            onMouseEnter={() => setZap(true)}
+            onMouseEnter={() => !isMobile && setZap(true)}
             onMouseLeave={() => !spin && setZap(false)}
-            style={{ perspective: 1000 }}
-            aria-label="Avatar - click or press Enter to trigger animation"
+            aria-label="Tap or press Enter to animate avatar"
+            aria-describedby="avatar-action-desc"
+            disabled={!canSpin}
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
+            onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
+              if ((e.key === "Enter" || e.key === " ") && canSpin) {
                 e.preventDefault();
                 triggerToss();
               }
             }}
+            style={{
+              perspective: 1000,
+              WebkitTapHighlightColor: "transparent",
+              pointerEvents: canSpin ? "auto" : "none",
+            }}
           >
+            <span id="avatar-action-desc" className="sr-only">
+              Tap or press Enter/Space to animate avatar. Animation has sound and haptic feedback on supported devices.
+            </span>
             <motion.div
-              className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 rounded-full overflow-hidden"
+              className="w-full h-full rounded-full overflow-hidden"
               animate={
-                spin
+                spin && !prefersReducedMotion
                   ? {
-                      rotateY: [0, 360, 720 + Math.floor(Math.random() * 360)],
-                      y: [-20, -200, 0],
+                      rotateY: [0, 360 + Math.floor(Math.random() * 60), 720 + Math.floor(Math.random() * 180)],
+                      y: [-20, -180, 0],
                     }
                   : {}
               }
-              transition={{ duration: 1.5, ease: "easeInOut" }}
+              transition={{
+                duration: prefersReducedMotion ? 0.6 : 1.5,
+                ease: "easeInOut",
+              }}
               style={{
                 transformStyle: "preserve-3d",
                 willChange: "transform, opacity",
@@ -136,16 +232,28 @@ export default function HeroSection() {
               <Image
                 src={currentImage}
                 alt="Avatar of Arshpreet Singh"
-                layout="fill"
-                objectFit="cover"
+                fill
+                sizes="(max-width:640px) 160px, (max-width:1024px) 208px, 256px"
+                quality={isMobile ? 60 : 90}
                 priority
                 draggable={false}
+                title="Avatar of Arshpreet Singh"
               />
             </motion.div>
             {zap && (
-              <div className="absolute inset-0 rounded-full ring-4 ring-purple-400 dark:ring-pink-400 animate-ping pointer-events-none" />
+              <div className="absolute inset-0 rounded-full ring-4 ring-purple-400 dark:ring-pink-400 pointer-events-none animate-ping" />
             )}
-          </div>
+            {spin && !prefersReducedMotion && (
+              <motion.div
+                className="absolute -inset-[3px] rounded-full border-2 border-purple-300 dark:border-pink-400 opacity-40 pointer-events-none"
+                animate={{
+                  scale: [1, 1.14, 1],
+                  opacity: [0.22, 0.45, 0.22],
+                }}
+                transition={{ repeat: 2, duration: 1, ease: "easeInOut" }}
+              />
+            )}
+          </motion.button>
         </AvatarWrapper>
       )}
 

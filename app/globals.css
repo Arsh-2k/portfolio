@@ -85,7 +85,7 @@
 
   /* Responsive Typography */
   h1, h2, h3, h4, h5, h6 {
-    scroll-margin-top: 4rem; /* good jump for anchored headings */
+    scroll-margin-top: 4rem; /* good for anchor jumps */
   }
 }
 
@@ -107,7 +107,6 @@
       color: #9333ea;
     }
   }
-
   @keyframes fade-up {
     from {
       opacity: 0;
@@ -118,7 +117,6 @@
       transform: translateY(0);
     }
   }
-
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -127,7 +125,6 @@
       opacity: 1;
     }
   }
-
   @keyframes breath {
     0%, 100% {
       transform: scale(1);
@@ -136,7 +133,6 @@
       transform: scale(1.015);
     }
   }
-
   @keyframes gradient-shine {
     0% {
       background-position: 0% center;
@@ -148,7 +144,6 @@
       background-position: 0% center;
     }
   }
-
   @keyframes rainbow {
     0% {
       background-position: 0% center;
@@ -157,7 +152,6 @@
       background-position: 360% center;
     }
   }
-
   @keyframes gradient-x {
     0% {
       background-position: 0% 50%;
@@ -169,12 +163,10 @@
       background-position: 0% 50%;
     }
   }
-
   @keyframes bounce-slow {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
   }
-
   @keyframes shimmer {
     0% {
       background-position: -200% 0;
@@ -183,24 +175,19 @@
       background-position: 200% 0;
     }
   }
-
   /* Animation Classes */
   .animate-zap {
     animation: zap 1.4s ease-in-out infinite;
   }
-
   .fade-up {
     animation: fade-up 0.6s ease-out forwards;
   }
-
   .fade-in {
     animation: fade-in 1s ease-out forwards;
   }
-
   .animate-breath {
     animation: breath 4s ease-in-out infinite;
   }
-
   .animate-gradient-shine {
     background: linear-gradient(90deg, #facc15, #e5e7eb, #facc15);
     background-size: 200% auto;
@@ -209,7 +196,6 @@
     color: transparent;
     animation: gradient-shine 3s ease-in-out infinite;
   }
-
   .animate-rainbow {
     background: linear-gradient(
       90deg,
@@ -227,16 +213,13 @@
     color: transparent;
     animation: rainbow 6s linear infinite;
   }
-
   .animate-gradient-x {
     background-size: 200% 200%;
     animation: gradient-x 6s ease infinite;
   }
-
   .animate-bounce-slow {
     animation: bounce-slow 2.4s ease-in-out infinite;
   }
-
   .animate-shimmer {
     background: linear-gradient(
       90deg,
@@ -247,16 +230,13 @@
     background-size: 400% 100%;
     animation: shimmer 1.5s linear infinite;
   }
-
   /* Utility Classes */
-
   .noselect {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
   }
-
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -264,29 +244,22 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-
-
   .glass {
     @apply backdrop-blur-md bg-white/20 dark:bg-white/5 border border-white/10 rounded-xl shadow-md;
   }
-
   .glass-hover:hover,
   .glass-hover:focus {
     @apply bg-white/30 dark:bg-white/10 border-white/20 shadow-lg;
   }
-
   .container-padding {
     @apply px-4 sm:px-8 lg:px-16;
   }
-
   .focus-outline {
     @apply outline-none focus-visible:outline-2 focus-visible:outline-purple-500 focus-visible:outline-offset-4 transition-all;
   }
-
   .theme-transition {
-    @apply transition-colors duration-500 ease-in-out;
+    @apply transition-colors duration-300 ease-in-out;
   }
-
   .cursor-fancy {
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -296,9 +269,38 @@
     transform: scale(1.05);
     box-shadow: 0 0 12px #a855f7aa;
   }
-
-  /* Responsive Typography example */
+  /* Responsive Typography */
   .text-responsive {
     font-size: clamp(1rem, 1.5vw, 1.25rem);
+  }
+}
+
+/* ---------------- IMPROVEMENTS (Accessibility & Mobile) ---------------- */
+
+/* Shorter theme color transition for snappier UX */
+.theme-transition {
+  @apply transition-colors duration-300 ease-in-out;
+}
+
+/* Reduce glass blur strength on mobile devices for better performance */
+@media (max-width: 640px) {
+  .glass {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+/* Respect prefers-reduced-motion for all custom animations and transitions */
+@media (prefers-reduced-motion: reduce) {
+  .animate-zap,
+  .animate-breath,
+  .animate-bounce-slow,
+  .animate-gradient-shine,
+  .animate-gradient-x,
+  .animate-shimmer,
+  .fade-up,
+  .fade-in {
+    animation: none !important;
+    transition: none !important;
   }
 }

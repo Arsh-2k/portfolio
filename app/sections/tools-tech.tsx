@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useEffect, useMemo, type ComponentType, type SVGProps } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import Tilt from "react-parallax-tilt";
 
-/** Helper to normalize tech names to react-icons/si icon names */
+// --- UTIL: Normalize names to react-icons/si exports ---
 function normalizeIconName(name: string): string {
   if (/^c\+\+$/i.test(name)) return "Cplusplus";
   if (/^node(\.|d)?js$/i.test(name)) return "Nodedotjs";
@@ -14,24 +14,22 @@ function normalizeIconName(name: string): string {
   if (/^github$/i.test(name)) return "Github";
   if (/^css3$/i.test(name)) return "Css3";
   if (/^html5$/i.test(name)) return "Html5";
-  // General: remove dots and capitalize first letter
   const clean = name.replace(/\./g, "").replace(/[^a-zA-Z0-9]/g, "");
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
 
-/** Dynamic icon import by correct Si* name */
+// --- UTIL: Dynamic import for react-icons/si ---
 function loadIcon(name: string) {
   const iconName = `Si${normalizeIconName(name)}`;
-  return dynamic<React.SVGProps<SVGSVGElement>>(
-    () =>
-      import("react-icons/si").then((mod) => {
-        const Icon = (mod as unknown as Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>>)[iconName];
-        return Icon || (() => null);
-      }),
-    { ssr: false }
-  );
+  return dynamic(() =>
+    import("react-icons/si").then((mod) => {
+      const Icon = (mod as unknown as Record<string, ComponentType<SVGProps<SVGSVGElement>>>)[iconName];
+      return Icon ?? (() => null);
+    }), { ssr: false }
+  ) as ComponentType<SVGProps<SVGSVGElement>>;
 }
 
+// --- DATA: Tech categories ---
 const categories = [
   { title: "💻 Languages", items: ["C", "Cplusplus", "Python", "Javascript"] },
   { title: "🌐 Frontend", items: ["Html5", "Css3", "Tailwindcss", "React"] },
@@ -40,7 +38,8 @@ const categories = [
   { title: "⚙️ Tools & Platforms", items: ["Git", "Github", "Vercel", "Vscode", "Appwrite", "Figma"] },
 ];
 
-const Sparkle = (props: React.SVGProps<SVGSVGElement>) => (
+// --- COMPONENT: Sparkle effect ---
+const Sparkle = (props: SVGProps<SVGSVGElement>) => (
   <svg width={28} height={28} viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
     <g filter="url(#blurredGlow)">
       <path d="M10 2v16M2 10h16" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
@@ -53,10 +52,39 @@ const Sparkle = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-function TechBadge({ name, delay = 0 }: { name: string; delay?: number }) {
-  const Icon = useMemo(() => loadIcon(name), [name]);
+type ThemeStyles = {
+  gradientBg: string;
+  titleGradient: string;
+  paragraphText: string;
+};
+
+// --- COMPONENT: Tech Badge ---
+function TechBadge({
+  name,
+  delay = 0,
+  mounted,
+}: {
+  name: string;
+  delay?: number;
+  mounted: boolean;
+}) {
   const reduceMotion = useReducedMotion();
-  // Inline key: ensures unique icon for each badge, avoids any import collision.
+  // Hook must run always
+  const Icon = useMemo(() => loadIcon(name), [name]);
+  const IconComponent = Icon;
+
+  if (!mounted) return (
+    <div
+      tabIndex={0}
+      role="img"
+      aria-label={name}
+      className="group relative rounded-xl p-4 bg-zinc-900/60 shadow-lg select-none min-h-[96px] animate-pulse"
+      style={{ minWidth: 96, minHeight: 96 }}
+    >
+      <div className="h-10 w-10 rounded bg-purple-100 dark:bg-purple-900/30 mx-auto mb-3" />
+      <div className="h-6 w-16 mx-auto rounded bg-zinc-700/60" />
+    </div>
+  );
 
   return (
     <motion.div
@@ -81,7 +109,7 @@ function TechBadge({ name, delay = 0 }: { name: string; delay?: number }) {
         tiltMaxAngleY={10}
         className="flex flex-col items-center justify-center"
       >
-        <Icon className="text-4xl sm:text-5xl text-purple-400 group-hover:text-purple-200 transition-colors drop-shadow-lg" />
+        <IconComponent className="text-4xl sm:text-5xl text-purple-400 group-hover:text-purple-200 transition-colors drop-shadow-lg" />
         <Sparkle className="absolute top-1 right-1 w-5 h-5 text-purple-300 animate-pulse opacity-75" />
         <p className="text-xs mt-3 text-white text-center tracking-wide font-semibold truncate max-w-full">
           {name.replace(/([a-z])([A-Z])/g, "$1 $2")}
@@ -91,7 +119,19 @@ function TechBadge({ name, delay = 0 }: { name: string; delay?: number }) {
   );
 }
 
-function TechCategory({ title, items, index }: { title: string; items: string[]; index: number }) {
+// --- COMPONENT: Tech Category ---
+function TechCategory({
+  title,
+  items,
+  index,
+  mounted,
+}: {
+  title: string;
+  items: string[];
+  index: number;
+  mounted: boolean;
+  themeStyles: ThemeStyles;
+}) {
   const reduceMotion = useReducedMotion();
   return (
     <motion.section
@@ -104,7 +144,6 @@ function TechCategory({ title, items, index }: { title: string; items: string[];
       transition={{ delay: index * 0.2, duration: 0.75, type: "spring", stiffness: 130 }}
       whileFocus={!reduceMotion ? { scale: 1.02, boxShadow: "0 0 24px 4px #a78bfa" } : {}}
     >
-      {/* Floating sparkles */}
       <div className="absolute inset-0 -z-10 pointer-events-none select-none animate-[-rotate_120s_linear_infinite]">
         {[...Array(5)].map((_, i) => (
           <Sparkle
@@ -134,17 +173,21 @@ function TechCategory({ title, items, index }: { title: string; items: string[];
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
         {items.map((tech, i) => (
-          <TechBadge key={tech} name={tech} delay={i * 0.06} />
+          <TechBadge key={tech} name={tech} delay={i * 0.06} mounted={mounted} />
         ))}
       </div>
     </motion.section>
   );
 }
 
+// --- MAIN COMPONENT ---
 export default function ToolsTech() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const { theme } = useTheme();
-  const isDark = useMemo(() => theme === "dark", [theme]);
-  const themeStyles = useMemo(
+  const isDark = mounted && theme === "dark";
+  const themeStyles = useMemo<ThemeStyles>(
     () => ({
       gradientBg: isDark
         ? "from-[#1a102e] via-[#2a164b] to-[#1f0e3c]"
@@ -157,22 +200,65 @@ export default function ToolsTech() {
     [isDark]
   );
 
+  if (!mounted) {
+    // SSR skeleton
+    return (
+      <section
+        id="tech"
+        className="relative w-full min-h-screen pt-16 pb-24 px-6 sm:px-10 md:px-16
+                  bg-gradient-to-br from-[#f3e8ff] via-[#e9d5ff] to-[#ede9fe]
+                  text-white scroll-mt-20 overflow-hidden transition-colors"
+      >
+        <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,#a78bfa22_1%,transparent_2%)] bg-[size:25px_25px] animate-[spin_120s_linear_infinite] opacity-10" />
+        <div className="relative mx-auto max-w-7xl grid gap-12 grid-cols-1 md:grid-cols-2">
+          <div className="flex flex-col justify-center items-center md:items-start text-center md:text-left">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight text-purple-800 opacity-50">
+              🛠️ Tools &amp; Tech
+            </h1>
+            <p className="max-w-lg sm:text-lg mt-4 text-zinc-700 select-none opacity-50">
+              Loading...
+            </p>
+          </div>
+          <div className="flex flex-col space-y-16">
+            {categories.map((cat) => (
+              <section
+                key={cat.title}
+                className="relative rounded-2xl p-8 bg-white/10 backdrop-blur-lg border border-purple-700/40 shadow-xl shadow-purple-800/30"
+              >
+                <div className="mb-6 h-7 w-44 bg-purple-200/50 rounded animate-pulse" />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+                  {cat.items.map((tech) => (
+                    <div
+                      key={tech}
+                      className="group relative rounded-xl p-4 bg-zinc-900/60 shadow-lg select-none animate-pulse min-h-[96px]"
+                      style={{ minWidth: 96, minHeight: 96 }}
+                    >
+                      <div className="h-10 w-10 rounded bg-purple-100 dark:bg-purple-900/30 mx-auto mb-3" />
+                      <div className="h-6 w-16 mx-auto rounded bg-zinc-700/60" />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       id="tech"
       className={`relative w-full min-h-screen pt-16 pb-24 px-6 sm:px-10 md:px-16
-                 bg-gradient-to-br ${themeStyles.gradientBg} text-white
-                 scroll-mt-20 overflow-hidden transition-colors`}
+                bg-gradient-to-br ${themeStyles.gradientBg} text-white
+                scroll-mt-20 overflow-hidden transition-colors`}
     >
-      {/* Soft animated grid pattern as background */}
       <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle,#a78bfa22_1%,transparent_2%)] bg-[size:25px_25px] animate-[spin_120s_linear_infinite] opacity-10" />
-
       <div className="relative mx-auto max-w-7xl grid gap-12 grid-cols-1 md:grid-cols-2">
-        {/* Intro panel */}
         <div className="flex flex-col justify-center items-center md:items-start text-center md:text-left">
           <motion.h1
             className={`text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight
-                       bg-gradient-to-r ${themeStyles.titleGradient} bg-clip-text text-transparent drop-shadow-lg`}
+                        bg-gradient-to-r ${themeStyles.titleGradient} bg-clip-text text-transparent drop-shadow-lg`}
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
@@ -188,10 +274,16 @@ export default function ToolsTech() {
             These technologies fuel my passion for creating dynamic, innovative, and impactful software. Keeping this toolkit sharp is my daily mission.
           </motion.p>
         </div>
-        {/* Category cards */}
         <div className="flex flex-col space-y-16">
           {categories.map((cat, i) => (
-            <TechCategory key={cat.title} title={cat.title} items={cat.items} index={i} />
+            <TechCategory
+              key={cat.title}
+              title={cat.title}
+              items={cat.items}
+              index={i}
+              mounted={mounted}
+              themeStyles={themeStyles}
+            />
           ))}
         </div>
       </div>

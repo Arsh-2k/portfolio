@@ -3,19 +3,18 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState, useCallback } from "react";
 import Particles from "@tsparticles/react";
-// import { Engine } from "@tsparticles/engine"; // Not needed in JS, remove or uncomment if you need Engine for JSDoc or runtime
-import { loadSlim } from "@tsparticles/slim"; // ⬅️ More performant than loadFull
+import { loadSlim } from "@tsparticles/slim"; // More performant build
 
 export default function ParticlesBackground() {
   const { resolvedTheme } = useTheme();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // 🌓 Detect dark mode reliably
+  // Listen for theme changes to update particles colors
   useEffect(() => {
     setIsDarkMode(resolvedTheme === "dark");
   }, [resolvedTheme]);
 
-  // ⚡ Efficient engine init using slim build
+  // Loads only slim features for performance
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
   }, []);

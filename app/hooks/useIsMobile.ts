@@ -1,42 +1,40 @@
 import { useState, useEffect } from "react";
-import throttle from "lodash.throttle";
 
 /**
  * Hook to determine if screen width is less than or equal to a breakpoint (default: 768px).
- * Uses throttling to prevent performance issues on rapid resize.
+ * Uses window.matchMedia for robust and accessible responsive detection.
  *
  * @param breakpoint - The pixel width to consider mobile (default is 768px).
  * @returns boolean indicating if the screen is mobile.
  */
 export default function useIsMobile(breakpoint: number = 768): boolean {
-  // Initialize state with a safe default in case window is undefined (SSR)
-  const [isMobile, setIsMobile] = useState<boolean>(() =>
-    typeof window !== "undefined" ? window.innerWidth <= breakpoint : false
-  );
+  // Helper to get initial state (for SSR safety)
+  const getIsMobile = () =>
+    typeof window !== "undefined"
+      ? window.matchMedia(`(max-width: ${breakpoint}px)`).matches
+      : false;
+
+  const [isMobile, setIsMobile] = useState<boolean>(getIsMobile);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
+    if (typeof window === "undefined") return;
 
-    const updateMobileState = () => {
-      setIsMobile(window.innerWidth <= breakpoint);
-    };
+    const mql = window.matchMedia(`(max-width: ${breakpoint}px)`);
 
-    // Throttle to limit calls to once every 200ms
-    const handleResize = throttle(updateMobileState, 200);
+    // Listener for media query changes (screen resize, rotation, etc)
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
 
-    // Initial check
-    updateMobileState();
+    // Set initial
+    setIsMobile(mql.matches);
 
-    window.addEventListener("resize", handleResize);
+    // Compatible event binding
+    mql.addEventListener("change", onChange);
 
-    // Cleanup
     return () => {
-      window.removeEventListener("resize", handleResize);
-      handleResize.cancel(); // Cancel any trailing throttled calls
+      mql.removeEventListener("change", onChange);
     };
   }, [breakpoint]);
 
   return isMobile;
 }
+  

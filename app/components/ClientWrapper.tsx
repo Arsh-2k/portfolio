@@ -7,25 +7,42 @@ interface ClientWrapperProps {
   children: ReactNode;
 }
 
+/**
+ * ClientWrapper - Improved for SSR-safe theming, performance, and mobile accessibility
+ * - Removes blank flash by relying on ThemeProvider's built-in SSR support.
+ * - Handles reduced motion for accessibility.
+ * - Uses a cleaner, mobile-first color transition.
+ */
+
 export default function ClientWrapper({ children }: ClientWrapperProps) {
-  const [mounted, setMounted] = useState(false);
+  // Detect reduced motion for accessibility
+  const [reducedMotion, setReducedMotion] = useState(false);
 
-  // Prevent hydration mismatch by rendering only after client mounts
   useEffect(() => {
-    setMounted(true);
+    if (typeof window !== "undefined") {
+      setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    }
   }, []);
-
-  if (!mounted) return null;
 
   return (
     <ThemeProvider
       attribute="class"
       defaultTheme="system"
-      enableSystem
+      enableSystem={true}
       disableTransitionOnChange
+      // Uncomment below if your next-themes has the ssr prop
+      // ssr
     >
-      {/* Optional: Wrap with smooth transition wrapper */}
-      <div className="transition-colors duration-500 ease-in-out min-h-screen">
+      <div
+        className={`min-h-screen ${
+          !reducedMotion ? "transition-colors duration-300 ease-in-out" : ""
+        }`}
+        // Optional: for mobile font smoothing & color rendering
+        style={{
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+        }}
+      >
         {children}
       </div>
     </ThemeProvider>

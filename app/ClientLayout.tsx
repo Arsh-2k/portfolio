@@ -9,7 +9,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true); // Prevents hydration mismatch for motion
+    setIsClient(true);
   }, []);
 
   return (
@@ -17,8 +17,8 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
       {/* ♿ Accessibility Skip Link */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only absolute top-2 left-2 z-50 
-                   bg-black text-white px-4 py-2 rounded-lg ring-2 ring-purple-500"
+        className="sr-only focus:not-sr-only absolute top-2 left-4 sm:left-6 z-50 
+                  bg-black text-white px-4 py-2 rounded-lg ring-2 ring-purple-500"
       >
         Skip to main content
       </a>
@@ -26,9 +26,9 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
       {/* 🎨 Theme Aura Background */}
       <div
         className="fixed inset-0 -z-10 bg-gradient-to-br 
-                   from-purple-50 via-transparent to-blue-50 
-                   dark:from-[#0f0a1b] dark:via-zinc-900 dark:to-purple-950 
-                   pointer-events-none"
+                  from-purple-50 via-transparent to-blue-50 
+                  dark:from-[#0f0a1b] dark:via-zinc-900 dark:to-purple-950 
+                  pointer-events-none"
       />
 
       {/* 🚀 Animated Page Wrapper */}
@@ -41,7 +41,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.3 }} // Shorter, snappier!
           >
             {children}
           </motion.main>
@@ -55,31 +55,34 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         </main>
       )}
 
-      {/* 🔮 Aesthetic Glow Orb */}
+      {/* 🔮 Aesthetic Glow Orb - hidden on xs for perf */}
       <div
-        className="fixed bottom-6 right-6 w-6 h-6 
-                   bg-gradient-to-tr from-purple-500 to-fuchsia-500 
-                   animate-pulse rounded-full blur-sm 
-                   pointer-events-none z-20"
+        className="hidden sm:block fixed bottom-6 right-6 w-6 h-6 
+                  bg-gradient-to-tr from-purple-500 to-fuchsia-500 
+                  animate-pulse rounded-full blur-sm 
+                  pointer-events-none z-20"
+        aria-hidden="true"
       />
 
       {/* 🔔 Toast Notifications */}
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: "#1f2937", // dark zinc
-            color: "#f9fafb",
-            borderRadius: "0.5rem",
-          },
-          success: {
-            iconTheme: {
-              primary: "#a855f7", // purple
-              secondary: "#f9fafb",
+      {isClient && (
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "#1f2937",
+              color: "#f9fafb",
+              borderRadius: "0.5rem",
             },
-          },
-        }}
-      />
+            success: {
+              iconTheme: {
+                primary: "#a855f7",
+                secondary: "#f9fafb",
+              },
+            },
+          }}
+        />
+      )}
 
       {/* 🧿 Sticky Social Media Sidebar */}
       <SocialBar />
