@@ -56,7 +56,7 @@ export default function Projects() {
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-12">
-          {projects.map((project, idx) => {
+          {projects.map((project) => {
             
             // --- FORMAL MODE (High-performance, no-fluff, pure data structure) ---
             if (isFormal) {
@@ -72,8 +72,8 @@ export default function Projects() {
                     {project.description}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {project.tech.map((tech, i) => (
-                      <span key={i} className="px-2 py-1 text-xs font-mono font-semibold bg-gray-200 dark:bg-zinc-800 text-gray-900 dark:text-gray-300">
+                    {project.tech.map((tech) => (
+                      <span key={tech} className="px-2 py-1 text-xs font-mono font-semibold bg-gray-200 dark:bg-zinc-800 text-gray-900 dark:text-gray-300">
                         [{tech}]
                       </span>
                     ))}
@@ -106,8 +106,8 @@ export default function Projects() {
                   </h3>
                   <p className="text-base text-gray-800 dark:text-gray-300 mb-5">{project.description}</p>
                   <div className="flex flex-wrap gap-2 mb-5">
-                    {project.tech.map((tech, i) => (
-                      <span key={i} className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100 rounded-full">
+                    {project.tech.map((tech) => (
+                      <span key={tech} className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100 rounded-full">
                         {tech}
                       </span>
                     ))}
@@ -133,8 +133,8 @@ export default function Projects() {
                   </h3>
                   <p className="text-base text-gray-800 dark:text-gray-300 mb-6">{project.description}</p>
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {project.tech.map((tech, i) => (
-                      <span key={i} className="px-3 py-1 text-sm font-medium bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100 rounded-full">
+                    {project.tech.map((tech) => (
+                      <span key={tech} className="px-3 py-1 text-sm font-medium bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100 rounded-full">
                         {tech}
                       </span>
                     ))}

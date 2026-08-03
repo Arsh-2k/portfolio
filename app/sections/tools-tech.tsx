@@ -142,7 +142,7 @@ function TechBadge({ name, delay = 0, mounted }: { name: string; delay?: number;
 }
 
 // --- FUN MODE CATEGORY (Desktop) ---
-function TechCategory({ title, items, index, mounted, themeStyles }: {
+function TechCategory({ title, items, index, mounted }: {
   title: string;
   items: string[];
   index: number;
@@ -246,7 +246,8 @@ export default function ToolsTech() {
             {categories.map((cat) => (
               <div key={cat.formalTitle} className="border-l-2 border-gray-300 dark:border-zinc-800 pl-4 sm:pl-6">
                 <h2 className="text-lg font-mono font-bold text-gray-800 dark:text-gray-300 mb-4 tracking-widest">
-                  // {cat.formalTitle}
+                  {/* Fixed comment node syntax */}
+                  {`// ${cat.formalTitle}`}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {cat.items.map((tech) => (
