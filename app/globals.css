@@ -36,8 +36,8 @@
   }
 
   .dark body {
-    background-color: #0d071a;
-    color: #e5e7eb;
+    background-color: #0A0A0A; /* Optimized True Black */
+    color: #F3F4F6;            /* Crisper white for readability */
     text-shadow: 0 0 4px rgba(255 255 255 / 0.06);
   }
 

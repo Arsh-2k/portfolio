@@ -1,20 +1,22 @@
+// @ts-expect-error: Allow importing global CSS in Next.js app directory
 import "./globals.css";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
 import ClientWrapper from "./components/ClientWrapper";
 import { Toaster } from "react-hot-toast";
 import SocialBar from "./components/SocialBar";
+import WebsiteTour from "./components/WebsiteTour";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // ----------- METADATA FOR SEO + OG -----------
 export const metadata: Metadata = {
   title: "Arshpreet Singh Portfolio",
-  description: "Created by Arshpreet Singh — Explore my projects, ideas, and more!",
-  metadataBase: new URL("https://your-portfolio-link.com"),
+  description: "Created by Arshpreet Singh — Explore my projects in low-latency engineering, C++, Java, and more!",
+  metadataBase: new URL("https://arshpreetsinghcse.com"), 
   openGraph: {
     title: "Arshpreet Singh Portfolio",
-    description: "Discover Arshpreet's latest projects, code, and creativity!",
-    url: "https://your-portfolio-link.com",
+    description: "Discover my latest projects in high-performance programming, The Logic-Gate Vault, and more!",
+    url: "https://arshpreetsinghcse.com", 
     siteName: "Arshpreet Portfolio",
     images: [
       {
@@ -29,8 +31,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Arshpreet Singh Portfolio",
-    description: "Web wizardry by Arsh — explore it!",
-    creator: "@your_twitter_handle",
+    description: "Web and software engineering portfolio of Arshpreet Singh.",
+    creator: "@AspiringSDeV7", 
     images: ["/og-image.png"],
   },
 };
@@ -52,6 +54,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           {children}
           <Toaster position="top-right" />
           <SocialBar />
+          <WebsiteTour />
           <SpeedInsights />
         </ClientWrapper>
       </body>

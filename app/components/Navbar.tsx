@@ -27,7 +27,9 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("#home");
-  const [mode, setMode] = useState<"fun" | "formal">("formal");
+  
+  // Set default to "fun" to match Hero section
+  const [mode, setMode] = useState<"fun" | "formal">("fun"); 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Nav links memoized once
@@ -43,17 +45,26 @@ export default function Navbar() {
     []
   );
 
-  // Mark mounted after hydration to avoid hydration mismatch on theme
+  // Mark mounted & Setup Global Event Listener
   useEffect(() => {
     setMounted(true);
-    const savedMode = localStorage.getItem("uimode");
+    
+    // 1. Read shared state on mount
+    const savedMode = localStorage.getItem("portfolioMode");
     if (savedMode === "fun" || savedMode === "formal") setMode(savedMode);
 
+    // 2. Listen for changes from the Hero section
+    const handleModeSync = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) setMode(customEvent.detail);
+    };
+    window.addEventListener("portfolioModeChanged", handleModeSync);
+
     return () => {
-      // Cleanup timeout on unmount if any
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      window.removeEventListener("portfolioModeChanged", handleModeSync);
     };
   }, []);
 
@@ -123,7 +134,11 @@ export default function Navbar() {
   const toggleMode = () => {
     const newMode = mode === "fun" ? "formal" : "fun";
     setMode(newMode);
-    localStorage.setItem("uimode", newMode);
+    
+    // Broadcast change to Hero section
+    localStorage.setItem("portfolioMode", newMode);
+    window.dispatchEvent(new CustomEvent("portfolioModeChanged", { detail: newMode }));
+    
     toast(`Switched to ${newMode === "fun" ? "Fun 🎉" : "Formal 💼"} Mode`, {
       icon: newMode === "fun" ? "🥳" : "🧑‍💼",
     });
@@ -134,7 +149,7 @@ export default function Navbar() {
       className={clsx(
         "fixed top-0 left-0 w-full z-50 transition-all duration-500 backdrop-blur-xl",
         "bg-gradient-to-r from-violet-500/80 via-purple-700/80 to-indigo-600/80",
-        "dark:from-[#1a0024]/80 dark:via-purple-900/50 dark:to-[#1a0024]/80",
+        "dark:from-[#0A0A0A]/90 dark:via-[#171717]/80 dark:to-[#0A0A0A]/90", 
         scrolled && "shadow-md"
       )}
     >
@@ -177,7 +192,7 @@ export default function Navbar() {
                 onClick={toggleTheme}
                 aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
                 title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-                className="p-2 rounded-full bg-violet-600 dark:bg-purple-700 shadow-md focus:outline-none focus:ring-2 focus:ring-violet-400"
+                className="p-2 rounded-full bg-violet-600 dark:bg-zinc-800 shadow-md focus:outline-none focus:ring-2 focus:ring-violet-400 transition-transform hover:scale-110"
               >
                 {theme === "dark" ? (
                   <Moon className="text-white w-5 h-5" />
@@ -189,7 +204,7 @@ export default function Navbar() {
                 onClick={toggleMode}
                 aria-label={`Switch to ${mode === "fun" ? "formal" : "fun"} mode`}
                 title={`Switch to ${mode === "fun" ? "formal" : "fun"} mode`}
-                className="p-2 rounded-full bg-indigo-500 dark:bg-indigo-800 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="p-2 rounded-full bg-indigo-500 dark:bg-zinc-700 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-transform hover:scale-110"
               >
                 {mode === "fun" ? (
                   <Laugh className="text-white w-5 h-5" />
@@ -206,7 +221,7 @@ export default function Navbar() {
           onClick={() => setMenuOpen((open) => !open)}
           aria-label={menuOpen ? "Close Mobile Menu" : "Open Mobile Menu"}
           aria-expanded={menuOpen}
-          className="md:hidden flex items-center gap-2 p-2 rounded-full bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-600 text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="md:hidden flex items-center gap-2 p-2 rounded-full bg-gradient-to-br from-indigo-600 via-purple-700 to-violet-600 dark:from-zinc-800 dark:to-zinc-700 text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-500"
           whileTap={{ scale: 0.9, rotate: 10 }}
           whileHover={{ scale: 1.1 }}
           type="button"
@@ -224,7 +239,7 @@ export default function Navbar() {
             className={clsx(
               "md:hidden fixed top-20 left-4 right-4 z-50 p-4 rounded-2xl border shadow-2xl",
               "bg-white text-gray-800 border-violet-300",
-              "dark:bg-[#1a0024]/90 dark:text-gray-100 dark:border-violet-400/30"
+              "dark:bg-[#171717] dark:text-gray-100 dark:border-zinc-700"
             )}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -239,42 +254,48 @@ export default function Navbar() {
                 className={clsx(
                   "block py-1 font-semibold transition-colors",
                   activeLink === link.href
-                    ? "text-violet-700 dark:text-violet-300 underline"
+                    ? "text-violet-700 dark:text-violet-400 underline"
                     : "hover:text-violet-500 dark:hover:text-violet-300"
                 )}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="flex justify-around pt-3">
-              <button
-                onClick={() => {
-                  toggleTheme();
-                  setMenuOpen(false);
-                }}
-                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-                className="p-2 rounded-full bg-violet-600 dark:bg-purple-700 shadow-md focus:outline-none focus:ring-2 focus:ring-violet-400"
-              >
-                {theme === "dark" ? (
-                  <Moon className="text-white w-5 h-5" />
-                ) : (
-                  <Sun className="text-yellow-500 w-5 h-5" />
-                )}
-              </button>
-              <button
-                onClick={() => {
-                  toggleMode();
-                  setMenuOpen(false);
-                }}
-                aria-label={`Switch to ${mode === "fun" ? "formal" : "fun"} mode`}
-                className="p-2 rounded-full bg-indigo-500 dark:bg-indigo-800 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              >
-                {mode === "fun" ? (
-                  <Laugh className="text-white w-5 h-5" />
-                ) : (
-                  <Briefcase className="text-white w-5 h-5" />
-                )}
-              </button>
+            
+            {/* Mobile Mode Toggles */}
+            <div className="flex justify-around pt-3 border-t border-gray-200 dark:border-zinc-800 mt-2">
+              {mounted && (
+                <>
+                  <button
+                    onClick={() => {
+                      toggleTheme();
+                      setMenuOpen(false);
+                    }}
+                    aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                    className="p-2 rounded-full bg-violet-600 dark:bg-zinc-800 shadow-md focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  >
+                    {theme === "dark" ? (
+                      <Moon className="text-white w-5 h-5" />
+                    ) : (
+                      <Sun className="text-yellow-500 w-5 h-5" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      toggleMode();
+                      setMenuOpen(false);
+                    }}
+                    aria-label={`Switch to ${mode === "fun" ? "formal" : "fun"} mode`}
+                    className="p-2 rounded-full bg-indigo-500 dark:bg-zinc-700 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  >
+                    {mode === "fun" ? (
+                      <Laugh className="text-white w-5 h-5" />
+                    ) : (
+                      <Briefcase className="text-white w-5 h-5" />
+                    )}
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         )}

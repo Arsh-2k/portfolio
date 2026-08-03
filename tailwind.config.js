@@ -11,8 +11,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#3B82F6",  // Blue-500
-        dark: "#0f0f0f",      // Deep dark theme base
+        primary: {
+          DEFAULT: "#3B82F6", // Cobalt Blue
+          hover: "#2563EB",
+          glow: "rgba(59, 130, 246, 0.5)",
+        },
+        dark: {
+          DEFAULT: "#0A0A0A", // True Black for OLED optimization
+          surface: "#171717", // Elevated dark surface
+          border: "#262626",  // Subtle divider
+        },
+        accent: {
+          gold: "#FFD700",    // Your existing coin-toss gold
+          silver: "#C0C0C0",  
+          cyan: "#00E5FF",    // High-tech accent for hover states
+        }
       },
 
       animation: {

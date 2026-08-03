@@ -1,7 +1,7 @@
 "use client";
 
 import Navbar from "./components/Navbar";
-import MainSection from "./sections/main";
+import Hero from "./sections/Hero"; // Fixed: Now importing your animated Hero component
 import About from "./sections/about";
 import Projects from "./sections/Projects";
 import ToolsTech from "./sections/tools-tech";
@@ -23,7 +23,7 @@ export default function Home() {
       >
         {/* 🏠 Landing Section */}
         <SectionWrapper id="home">
-          <MainSection />
+          <Hero />
         </SectionWrapper>
 
         {/* 👤 About Me */}

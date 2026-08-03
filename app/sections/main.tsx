@@ -12,6 +12,7 @@ import { motion, useReducedMotion, easeInOut } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import Image from "next/image";
 import useIsMobile from "../hooks/useIsMobile";
+import usePortfolioMode from "../hooks/usePortfolioMode";
 
 // Dynamic imports (no SSR)
 const ParticlesBackground = dynamic(() => import("../components/ParticlesBackground"), { ssr: false });
@@ -26,15 +27,17 @@ function triggerHaptic(): void {
   }
 }
 
-// Memoized Wrapper for Avatar, disables Tilt for mobile
+// Memoized Wrapper for Avatar, disables Tilt for mobile & formal mode
 interface AvatarWrapperProps {
   children: ReactNode;
+  isFormal: boolean;
 }
-const AvatarWrapper = memo(({ children }: AvatarWrapperProps) => {
+const AvatarWrapper = memo(({ children, isFormal }: AvatarWrapperProps) => {
   const isMobile = useIsMobile();
-  return isMobile ? (
-    <div className="perspective-1000">{children}</div>
-  ) : (
+  if (isMobile || isFormal) {
+    return <div className="perspective-1000">{children}</div>;
+  }
+  return (
     <Tilt
       glareEnable
       glareMaxOpacity={0.2}
@@ -50,9 +53,9 @@ const AvatarWrapper = memo(({ children }: AvatarWrapperProps) => {
 });
 AvatarWrapper.displayName = "AvatarWrapper";
 
-// Framer motion variants (shorter duration on mobile)
-const getAvatarVariants = (isMobile: boolean) => ({
-  spin: {
+// Framer motion variants
+const getAvatarVariants = (isMobile: boolean, isFormal: boolean) => ({
+  spin: isFormal ? {} : {
     rotateY: [0, 360],
     y: [0, isMobile ? -60 : -100, 0],
     transition: { duration: isMobile ? 0.9 : 1.5, ease: easeInOut },
@@ -67,11 +70,15 @@ export default function MainSection() {
   const [isClient, setIsClient] = useState(false);
   const [canAnimate, setCanAnimate] = useState(true);
   const [showParticles, setShowParticles] = useState(true);
+  
   const tossTimeoutRef = useRef<TimeoutRef>(null);
   const isMobile = useIsMobile();
   const prefersReducedMotion = useReducedMotion();
+  
+  const mode = usePortfolioMode();
+  const isFormal = mode === "formal";
 
-  // Battery check: disables particles for mobile & low battery & reduced motion
+  // Battery & capability check
   useEffect(() => {
     setIsClient(true);
 
@@ -81,6 +88,7 @@ export default function MainSection() {
       if (
         isMobile ||
         prefersReducedMotion ||
+        isFormal || // Disable particles in formal mode
         (battery && battery.level < 0.15 && battery.dischargingTime !== Infinity)
       ) {
         setShowParticles(false);
@@ -103,11 +111,11 @@ export default function MainSection() {
     return () => {
       if (tossTimeoutRef.current) clearTimeout(tossTimeoutRef.current);
     };
-  }, [isMobile, prefersReducedMotion]);
+  }, [isMobile, prefersReducedMotion, isFormal]);
 
   // Avatar click/tap animation logic
   const triggerToss = () => {
-    if (spin || !canAnimate) return;
+    if (spin || !canAnimate || isFormal) return; // Disable toss in formal mode
     setZap(true);
     setSpin(true);
     setBgSwap(true);
@@ -121,26 +129,28 @@ export default function MainSection() {
     }, isMobile ? 900 : 1500);
   };
 
-  // Avatar variants based on device
-  const avatarVariants = getAvatarVariants(isMobile);
+  const avatarVariants = getAvatarVariants(isMobile, isFormal);
+
+  // Background styling
+  const sectionBg = isFormal
+    ? "bg-white dark:bg-[#0A0A0A]"
+    : bgSwap
+      ? isMobile
+        ? "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-950 dark:via-zinc-950 dark:to-purple-950"
+        : "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-900 dark:via-zinc-950 dark:to-purple-900"
+      : isMobile
+        ? "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-950 dark:to-purple-950"
+        : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950";
 
   return (
     <section
       id="home"
-      className={`relative w-full min-h-screen flex flex-col justify-center items-center px-6 md:px-10 pt-24 pb-32 text-center transition-all duration-500 text-black dark:text-white ${
-        bgSwap
-          ? isMobile
-            ? "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-950 dark:via-zinc-950 dark:to-purple-950"
-            : "bg-gradient-to-br from-purple-100 via-blue-50 to-indigo-200 dark:from-indigo-900 dark:via-zinc-950 dark:to-purple-900"
-          : isMobile
-          ? "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-950 dark:to-purple-950"
-          : "bg-gradient-to-br from-white via-gray-100 to-purple-100 dark:from-black dark:via-zinc-900 dark:to-purple-950"
-      }`}
+      className={`relative w-full min-h-screen flex flex-col justify-center items-center px-6 md:px-10 pt-24 pb-32 text-center transition-all duration-500 text-black dark:text-white ${sectionBg}`}
     >
-      {/* Show animated background only on desktop/tablet, not mobile */}
-      {isClient && showParticles && !prefersReducedMotion && !isMobile && <ParticlesBackground />}
+      {/* Animated background only on fun mode + desktop/tablet */}
+      {isClient && showParticles && !isFormal && <ParticlesBackground />}
 
-      {/* Social bar with mobile-specific safe positioning */}
+      {/* Social bar */}
       <div
         className={`absolute z-20 ${
           isMobile
@@ -153,42 +163,33 @@ export default function MainSection() {
 
       {/* Interactive Avatar */}
       {isClient && (
-        <AvatarWrapper>
+        <AvatarWrapper isFormal={isFormal}>
           <motion.button
-            className={`relative cursor-pointer rounded-full border-4 border-violet-400 ${
-              isMobile ? "shadow-lg" : "shadow-2xl"
-            } w-fit focus:ring-4 focus:ring-violet-300 transition-none
+            className={`relative rounded-full focus:outline-none transition-all duration-300
+            ${isFormal 
+              ? "border-2 border-black dark:border-zinc-800 cursor-default shadow-none grayscale hover:grayscale-0" 
+              : `cursor-pointer border-4 border-violet-400 focus:ring-4 focus:ring-violet-300 ${isMobile ? "shadow-lg" : "shadow-2xl"}`
+            }
             min-w-[56px] min-h-[56px] sm:min-w-[80px] sm:min-h-[80px] md:min-w-[110px] md:min-h-[110px]`}
             style={{
               transformStyle: "preserve-3d",
-              outline: "none",
               WebkitTapHighlightColor: "transparent",
             }}
             onClick={triggerToss}
-            onMouseEnter={() => !isMobile && setZap(true)}
+            onMouseEnter={() => !isMobile && !isFormal && setZap(true)}
             onMouseLeave={() => !spin && setZap(false)}
-            aria-label="Activate animated avatar"
+            aria-label="Profile Avatar"
             aria-pressed={spin}
-            aria-describedby="avatar-action-desc"
             type="button"
-            disabled={!canAnimate}
-            tabIndex={0}
-            onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>) => {
-              if ((e.key === "Enter" || e.key === " ") && canAnimate) {
-                e.preventDefault();
-                triggerToss();
-              }
-            }}
+            disabled={!canAnimate || isFormal}
+            tabIndex={isFormal ? -1 : 0}
           >
-            <span id="avatar-action-desc" className="sr-only">
-              Click, tap, or press Enter/Space to see animation.
-            </span>
             <motion.div
               variants={avatarVariants}
               animate={spin && !prefersReducedMotion ? "spin" : "idle"}
             >
               <Image
-                src="/avatar.jpg"
+                src={isFormal ? "/avatar-formal.jpg" : "/avatar.jpg"}
                 alt="Avatar of Arshpreet Singh"
                 width={isMobile ? 120 : 256}
                 height={isMobile ? 120 : 256}
@@ -203,7 +204,9 @@ export default function MainSection() {
                 draggable={false}
               />
             </motion.div>
-            {zap && !prefersReducedMotion && (
+            
+            {/* Fun Mode Effects */}
+            {zap && !prefersReducedMotion && !isFormal && (
               <motion.div
                 className="absolute inset-0 rounded-full ring-2 ring-purple-300 z-10 pointer-events-none"
                 initial={{ opacity: 0.4, scale: 0.95 }}
@@ -211,8 +214,7 @@ export default function MainSection() {
                 transition={{ duration: isMobile ? 0.7 : 1 }}
               />
             )}
-            {/* Avoid heavy pulses on mobile */}
-            {!prefersReducedMotion && !isMobile && (
+            {!prefersReducedMotion && !isMobile && !isFormal && (
               <motion.div
                 className="absolute -inset-1 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 blur-2xl opacity-25 z-0 pointer-events-none"
                 animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.3, 0.2] }}
@@ -225,7 +227,11 @@ export default function MainSection() {
 
       {/* Headline */}
       <motion.h1
-        className="mt-10 text-3xl sm:text-4xl md:text-5xl font-extrabold z-10 bg-gradient-to-r from-purple-500 via-indigo-400 to-cyan-500 bg-clip-text text-transparent tracking-wide transition duration-300"
+        className={`mt-10 z-10 transition-all duration-300 ${
+          isFormal
+            ? "text-3xl sm:text-4xl md:text-5xl font-mono font-bold uppercase tracking-tight"
+            : "text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-500 via-indigo-400 to-cyan-500 bg-clip-text text-transparent tracking-wide"
+        }`}
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
@@ -235,12 +241,19 @@ export default function MainSection() {
 
       {/* Subtitle */}
       <motion.p
-        className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl z-10 text-black/80 dark:text-white/90 hover:text-violet-500 dark:hover:text-violet-400 transition duration-300"
+        className={`mt-4 max-w-2xl z-10 transition duration-300 ${
+          isFormal
+            ? "text-xs sm:text-sm font-mono text-gray-500 dark:text-gray-400 uppercase tracking-widest"
+            : "text-base sm:text-lg md:text-xl text-black/80 dark:text-white/90 hover:text-violet-500 dark:hover:text-violet-400"
+        }`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}
       >
-        • Programming - Level 1 • Web Developer - Level 1 • Open Source Contributor - Level 1 • Chess &amp; Coding Enthusiast
+        {isFormal
+          ? "> SOFTWARE_ENGINEER | LOW_LATENCY_SYSTEMS | QUANTITATIVE_DEV"
+          : "• Programming - Level 1 • Web Developer - Level 1 • Open Source Contributor - Level 1 • Chess & Coding Enthusiast"
+        }
       </motion.p>
     </section>
   );

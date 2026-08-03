@@ -15,6 +15,7 @@ import { SiLeetcode } from "react-icons/si";
 import { GiCricketBat } from "react-icons/gi";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
+import usePortfolioMode from "../hooks/usePortfolioMode";
 
 const icons = [
   { icon: <FaHome />, link: "#home", label: "Home" },
@@ -50,6 +51,9 @@ const SocialBar = () => {
   const [isFlipping, setIsFlipping] = useState(false);
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
+
+  const mode = usePortfolioMode();
+  const isFormal = mode === "formal";
 
   useEffect(() => {
     setIsClient(true);
@@ -88,6 +92,27 @@ const SocialBar = () => {
   const sharedGradient =
     "bg-gradient-to-tr from-[#7f00ff] via-[#e100ff] to-[#8e2de2]";
 
+  // --- FORMAL MODE VIEW (Clean, minimalist, vertical or horizontal structured bar) ---
+  if (isFormal) {
+    return (
+      <div className="flex flex-col gap-2 z-50">
+        {icons.map((item, i) => (
+          <a
+            key={i}
+            href={item.link}
+            target={item.link.startsWith("#") ? "_self" : "_blank"}
+            rel="noopener noreferrer"
+            aria-label={item.label}
+            className="w-9 h-9 flex items-center justify-center border border-gray-300 dark:border-zinc-800 bg-white dark:bg-[#0A0A0A] text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors text-sm font-mono shadow-sm"
+          >
+            {item.icon}
+          </a>
+        ))}
+      </div>
+    );
+  }
+
+  // --- FUN MODE VIEW (Your custom glowing floating bar) ---
   return (
     <div className="fixed bottom-4 left-4 sm:left-1/2 sm:-translate-x-1/2 z-[9999]">
       <motion.button
