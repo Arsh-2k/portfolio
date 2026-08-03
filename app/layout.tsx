@@ -1,4 +1,3 @@
-// @ts-expect-error: Allow importing global CSS in Next.js app directory
 import "./globals.css";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
